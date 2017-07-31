@@ -134,9 +134,25 @@ if $FOR_MIGRATION; then
 fi
 
 if $FOR_MIGRATION; then
-  # Change spaces
-  # deployerChanges dev fs-intake-prod public-production fs-intake-staging public-staging
-  # deployerChanges master fs-intake-prod public-production fs-intake-staging public-staging
+  # Change spaces (FYI can't use the above  because the intake frontend app name is the same as the old space)
+  updateDeployementOrgs dev “update deployment to $ORGNAME” "cg-deploy/*" $OLDORG $ORGNAME
+
+  updateDeployementOrgs dev “update prod space name” "*" fs-intake-prod public-production
+  updateDeployementOrgs master “update deployment to $ORGNAME” "cg-deploy/*" $OLDORG $ORGNAME
+  updateDeployementOrgs master “update prod space name” "*" fs-intake-prod public-production
+
+  #Staging instance needs to be run manually because of recurrent use of the term
+  updateIntakeDevSpaceName()
+  {
+  git checkout $1
+  sed -i 's/fs-intake-staging/public-staging/g' circle.yml
+  sed - i 's/= \'fs-intake-staging\'/= \'public-staging\'/g'
+  git add .
+  git commit -m "update dev space name"
+  git push origin $1
+  }
+  updateIntakeDevSpaceName dev
+  updateIntakeDevSpaceName master
 fi
 
 # Push apps on new org
