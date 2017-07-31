@@ -37,17 +37,21 @@ createMiddlelayerServices middlelayer-api-staging $NRM_SUDS_URL_SERVICE_PROD_SUD
 createMiddlelayerServices middlelayer-api-production $NRM_SUDS_URL_SERVICE_PROD_SUDS_API_URL $NRM_SUDS_URL_SERVICE_password $NRM_SUDS_URL_SERVICE_username
 
 # On old org-
-# Unbind old urls
-cf t -o $OLDORG -s fs-api-prod
-
-cf unbind-route fs-middlelayer-api ROUTE
-cf -s fs-api-staging
-cf unbind-route fs-middlelayer-api-staging ROUTE
-
+# Delete old routes
+freeOldOrgUrl()
+{
+cf t -o $OLDORG -s $1
+cf unmap-route $2 app.cloud.gov --hostname $3
+cf delete-route -f app.cloud.gov --hostname $3
+}
+#Free urls for middlelayer for both production and staging
+freeOldOrgUrl fs-api-staging fs-middlelayer-api-staging fs-middlelayer-api-staging
 
 # Update cg-deploy orgs to Org name
 updateDeployementOrgs()
 {
+
+git checkout $1
 DPATH="cg-deploy/*"
 for f in $DPATH
 do
@@ -61,9 +65,9 @@ Done
 
 git add .
 git commit -m “update deployment to $ORGNAME”
-git push origin dev
+git push origin $1
 }
-updateDeployementOrgs
+updateDeployementOrgs dev
 
 # Push app on new org
 cf t -o $ORGNAME -s middlelayer-api-production
