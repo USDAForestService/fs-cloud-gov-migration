@@ -134,9 +134,18 @@ if $FOR_MIGRATION; then
 fi
 
 if $FOR_MIGRATION; then
-# On old org-
-# Delete old routes
-# Change spaces
-  deployerChanges dev fs-api-prod api-production fs-api-staging api-staging
-  deployerChanges master fs-api-prod api-production fs-api-staging api-staging
+  # Change spaces
+  # deployerChanges dev fs-intake-prod public-production fs-intake-staging public-staging
+  # deployerChanges master fs-intake-prod public-production fs-intake-staging public-staging
 fi
+
+# Push apps on new org
+cf t -o $ORGNAME -s public-production
+git checkout master # not sure if this makes sense
+cf push forest-service-epermit -f "./cg-deploy/manifests/production/manifest-frontend.yml"
+cf push fs-intake-api -f "./cg-deploy/manifests/production/manifest-api.yml"
+
+cf t -s public-staging
+git checkout dev
+cf push fs-intake-staging -f "./cg-deploy/manifests/staging/manifest-frontend-staging.yml"
+cf push fs-intake-api-staging -f "./cg-deploy/manifests/staging/manifest-api-staging.yml"

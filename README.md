@@ -9,8 +9,17 @@ Each repository, has both a `staging` and  `production` housed in a separate spa
 
 ## Running the script
 
+Enter all of your envs in `env.sh` (env-sample.sh) includes all the necessary variables.
 In bash shell script run:
+
 `./migration.sh`
+
+If you would like to not run the migration tasks and just create the new apps and corresponding services within an org run:
+
+`./migration.sh `
+
+## Afterwards
+Deployer credentials on `circle ci` should be updated to the new deployer accounts.
 
 ## Contributing
 
