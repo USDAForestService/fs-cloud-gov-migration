@@ -1,0 +1,6 @@
+[submodule "fs-intake-module"]
+	path = fs-intake-module
+	url = https://github.com/18F/fs-intake-module.git
+[submodule "fs-middlelayer-api"]
+	path = fs-middlelayer-api
+	url = https://github.com/18F/fs-middlelayer-api.git
