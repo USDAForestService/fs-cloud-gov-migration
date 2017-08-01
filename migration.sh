@@ -7,7 +7,6 @@ if [ "$process_org"=="true" ]; then
     FOR_MIGRATION=false
 fi
 
-if $FOR_MIGRATION ; then
 ORGNAME = usda-forest-service
 OLDORG = gsa-acq-proto
 
@@ -68,7 +67,7 @@ findAndReplace()
      else
       echo "Error: Cannot read $f"
     fi
-  Done
+  done
 }
 
 updateDeployementOrgs()
@@ -115,9 +114,9 @@ cf create-service aws-rds shared-psql intake-db
 cf create-service s3 basic intake-s3
 cf create-service cloud-gov-service-account space-deployer intake-deployer
 cf service-key my-service-account intake-deployer
-middlelayer_service='{"MIDDLELAYER_BASE_URL": $2, "MIDDLELAYER_PASSWORD": $3, "MIDDLELAYER_USERNAME": $4}'
+middlelayer_service='{"MIDDLELAYER_BASE_URL": "$2", "MIDDLELAYER_PASSWORD": "$3", "MIDDLELAYER_USERNAME": "$4"}'
 cf cups -p middlelayer-service -p $middlelayer_service
-intake_auth_service='{"INTAKE_CLIENT_BASE_URL": $5, "INTAKE_PASSWORD": $6, "INTAKE_USERNAME": $7}'
+intake_auth_service='{"INTAKE_CLIENT_BASE_URL": "$5", "INTAKE_PASSWORD": "$6", "INTAKE_USERNAME": "$7"}'
 cf cups -p intake-auth-service $intake_auth_service
 }
 
