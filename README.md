@@ -7,6 +7,8 @@ The repositories are the [https://github.com/18f/fs-intake-module] and the [http
 
 Each repository, has both a `staging` and  `production` housed in a separate space in the org.
 
+At this point the migration does not include any migration of the data from either database.
+
 ## Running the script
 
 Enter all of your envs in `env.sh` (env-sample.sh) includes all the necessary variables.
