@@ -155,12 +155,20 @@ if $FOR_MIGRATION; then
 fi
 
 # Push apps on new org
+brew install yarn
+cd frontend
+yarn
+ng build --prod --env=prod;
 cf t -o $ORGNAME -s public-production
-git checkout master # not sure if this makes sense
+git checkout master
 cf push forest-service-epermit -f "./cg-deploy/manifests/production/manifest-frontend.yml"
 cf push fs-intake-api -f "./cg-deploy/manifests/production/manifest-api.yml"
+cd .. || return
 
 cf t -s public-staging
 git checkout dev
+cd frontend
+yarn
+ng build --prod --env=prod;
 cf push fs-intake-staging -f "./cg-deploy/manifests/staging/manifest-frontend-staging.yml"
 cf push fs-intake-api-staging -f "./cg-deploy/manifests/staging/manifest-api-staging.yml"
