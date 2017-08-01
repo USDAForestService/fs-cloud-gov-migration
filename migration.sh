@@ -1,7 +1,7 @@
 #!/bin/bash
 
-process_org=${1:-true}
-if [ "$process_org" == "true" ]; then
+INPUT_MIGRATION=${1:-true}
+if [ "$INPUT_MIGRATION" == "true" ]; then
     FOR_MIGRATION=true
   else
     FOR_MIGRATION=false
@@ -19,7 +19,7 @@ git clone https://github.com/18F/fs-middlelayer-api.git
 
 cd fs-middlelayer-api || return
 cf login -sso
-cf t -o $ORGNAME
+cf t -o ${ORGNAME}
 
 # Create spaces
 cf create-space api-staging
@@ -31,25 +31,30 @@ cf create-space public-production
 
 createMiddlelayerServices()
 {
-cf t -s "$1"
-cf create-service aws-rds shared-psql fs-api-db
-cf create-service s3 basic fs-api-s3
-cf create-service cloud-gov-service-account space-deployer fs-api-deployer
-cf service-key my-service-account fs-api-deployer
-nrm_services="{"SUDS_API_URL": "$2", "password": "$3", "username":"$4"}"
-cf cups -p nrm-suds-url-service -p '$nrm_services'
-auth_service="{"JWT_SECRET_KEY": "$5"}"
-cf cups -p auth-service '$auth_service'
+  cf t -s "${1}"
+  cf create-service aws-rds shared-psql fs-api-db
+  cf create-service s3 basic fs-api-s3
+  cf create-service cloud-gov-service-account space-deployer fs-api-deployer
+  cf service-key my-service-account fs-api-deployer
+
+  #User Provided services for credentials
+  #Connection to SUDS
+  NRM_SERVICES_JSON="{\"SUDS_API_URL\": \"${2}\", \"password\": "${3}", \"username\":\"${4}\"}"
+  cf cups -p nrm-suds-url-service -p "${NRM_SERVICES_JSON}"
+
+  #Authenication with consumer services
+  AUTH_SERVICE_JSON="{\"JWT_SECRET_KEY\": "${5}"}"
+  cf cups -p auth-service "${AUTH_SERVICE_JSON}"
 }
 
-createMiddlelayerServices middlelayer-api-staging "$NRM_SUDS_URL_SERVICE_PROD_SUDS_API_URL" "$NRM_SUDS_URL_SERVICE_password" "$NRM_SUDS_URL_SERVICE_username" "$AUTH_SERVICE_DEV_JWT_SECRET_KEY"
-createMiddlelayerServices middlelayer-api-production "$NRM_SUDS_URL_SERVICE_PROD_SUDS_API_URL" "$NRM_SUDS_URL_SERVICE_password" "$NRM_SUDS_URL_SERVICE_username" "$AUTH_SERVICE_PROD_JWT_SECRET_KEY"
+createMiddlelayerServices middlelayer-api-staging "${NRM_SUDS_URL_SERVICE_PROD_SUDS_API_URL}" "${NRM_SUDS_URL_SERVICE_password}" "${NRM_SUDS_URL_SERVICE_username}" "${AUTH_SERVICE_DEV_JWT_SECRET_KEY}"
+createMiddlelayerServices middlelayer-api-production "${NRM_SUDS_URL_SERVICE_PROD_SUDS_API_URL}" "${NRM_SUDS_URL_SERVICE_password}" "${NRM_SUDS_URL_SERVICE_username}" "${AUTH_SERVICE_PROD_JWT_SECRET_KEY}"
 
 freeOldOrgUrl()
 {
-cf t -o "$OLDORG" -s "$1"
-cf unmap-route "$2" app.cloud.gov --hostname "$3"
-cf delete-route -f app.cloud.gov --hostname "$3"
+cf t -o "${OLDORG}" -s "${1}"
+cf unmap-route "${2}" app.cloud.gov --hostname "${3}"
+cf delete-route -f app.cloud.gov --hostname "${3}"
 }
 
 if $FOR_MIGRATION; then
@@ -60,42 +65,42 @@ fi
 # Update cg-deploy orgs to Org name
 findAndReplace()
 {
-  for f in $1
+  for f in "${1}"
   do
-    if [ -f $f -a -r $f ]; then
-      sed -i "s/$2/$3/g" "$f"
+    if [ -f "${f}" -a -r "${f}" ]; then
+      sed -i "s/${2}/${3}/g" "${f}"
      else
-      echo "Error: Cannot read $f"
+      echo "Error: Cannot read ${f}"
     fi
   done
 }
 
 updateDeployementOrgs()
 {
-  git checkout $1
-  findAndReplace $3 $4 $5
+  git checkout ${1}
+  findAndReplace ${3} ${4} ${5}
   git add .
-  git commit -m $2
-  git push origin $1
+  git commit -m ${2}
+  git push origin ${1}
 }
 
 deployerChanges()
 {
-  updateDeployementOrgs $1 "update deployment to $ORGNAME" "cg-deploy/*" $OLDORG $ORGNAME
-  updateDeployementOrgs $1 "update prod space name" "*" $2 $3
-  updateDeployementOrgs $1 "update dev space name" "*" $4 $5
+  updateDeployementOrgs ${1} "update deployment to ${ORGNAME}" "cg-deploy/*" "${OLDORG}" "${ORGNAME}"
+  updateDeployementOrgs ${1} "update prod space name" "*" ${2} ${3}
+  updateDeployementOrgs ${1} "update dev space name" "*" ${4} ${5}
 }
 
 if $FOR_MIGRATION; then
-# On old org-
-# Delete old routes
-# Change spaces
+  # On old org-
+  # Delete old routes
+  # Change spaces
   deployerChanges dev fs-api-prod api-production fs-api-staging api-staging
   deployerChanges master fs-api-prod api-production fs-api-staging api-staging
 fi
 
 # Push app on new org
-cf t -o $ORGNAME -s api-production
+cf t -o ${ORGNAME} -s api-production
 git checkout master # not sure if this makes sense
 cf push fs-middlelayer-api -f "./cg-deploy/manifests/manifest.yml"
 
@@ -109,19 +114,24 @@ cd fs-intake-module || return
 
 createIntakeServices()
 {
-cf t -s $1
-cf create-service aws-rds shared-psql intake-db
-cf create-service s3 basic intake-s3
-cf create-service cloud-gov-service-account space-deployer intake-deployer
-cf service-key my-service-account intake-deployer
-middlelayer_service="{"MIDDLELAYER_BASE_URL": "$2", "MIDDLELAYER_PASSWORD": "$3", "MIDDLELAYER_USERNAME": "$4"}"
-cf cups -p middlelayer-service -p '$middlelayer_service'
-intake_auth_service="{"INTAKE_CLIENT_BASE_URL": "$5", "INTAKE_PASSWORD": "$6", "INTAKE_USERNAME": "$7"}"
-cf cups -p intake-auth-service '$intake_auth_service'
+  cf t -s ${1}
+  cf create-service aws-rds shared-psql intake-db
+  cf create-service s3 basic intake-s3
+  cf create-service cloud-gov-service-account space-deployer intake-deployer
+  cf service-key my-service-account intake-deployer
+
+  #Create user provided services
+  #create service and provide credentials for connection to the middlelayer-service
+  MIDDLELAYER_SERVICE_JSON="{\"MIDDLELAYER_BASE_URL\": "${2}", \"MIDDLELAYER_PASSWORD\": "${3}", \"MIDDLELAYER_USERNAME\": "${4}"}"
+  cf cups -p middlelayer-service -p "${MIDDLELAYER_SERVICE_JSON}"
+
+  #
+  INTAKE_AUTH_SERVICE_JSON="{\"INTAKE_CLIENT_BASE_URL\": "${5}", \"INTAKE_PASSWORD\": "${6}", \"INTAKE_USERNAME\": "${7}"}"
+  cf cups -p intake-auth-service "${INTAKE_AUTH_SERVICE_JSON}"
 }
 
-createIntakeServices public-staging "$MIDDLE_SERVICE_PROD_MIDDLELAYER_BASE_URL" "$MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD" "$MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME" "$INTAKE_CLIENT_SERVICE_PROD_INTAKE_CLIENT_BASE_URL" "$INTAKE_CLIENT_SERVICE_PROD_INTAKE_PASSWORD" "$INTAKE_CLIENT_SERVICE_PROD_INTAKE_USERNAME"
-createIntakeServices public-production "$MIDDLE_SERVICE_DEV_MIDDLELAYER_BASE_URL" "$MIDDLE_SERVICE_DEV_MIDDLELAYER_PASSWORD" "$MIDDLE_SERVICE_DEV_MIDDLELAYER_USERNAME" "$INTAKE_CLIENT_SERVICE_DEV_INTAKE_CLIENT_BASE_URL" "$INTAKE_CLIENT_SERVICE_DEV_INTAKE_PASSWORD" "$INTAKE_CLIENT_SERVICE_DEV_INTAKE_USERNAME"
+createIntakeServices public-staging "${MIDDLE_SERVICE_PROD_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_USERNAME}"
+createIntakeServices public-production "${MIDDLE_SERVICE_DEV_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_DEV_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_DEV_MIDDLELAYER_USERNAME}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_USERNAME}"
 
 if $FOR_MIGRATION; then
   # On old org-
@@ -134,21 +144,21 @@ fi
 
 if $FOR_MIGRATION; then
   # Change spaces (FYI can't use the above  because the intake frontend app name is the same as the old space)
-  updateDeployementOrgs dev "update deployment to $ORGNAME" "cg-deploy/*" $OLDORG $ORGNAME
+  updateDeployementOrgs dev "update deployment to ${ORGNAME}" "cg-deploy/*" ${OLDORG} ${ORGNAME}
 
   updateDeployementOrgs dev "update prod space name" "*" fs-intake-prod public-production
-  updateDeployementOrgs master "update deployment to $ORGNAME" "cg-deploy/*" $OLDORG $ORGNAME
+  updateDeployementOrgs master "update deployment to ${ORGNAME}" "cg-deploy/*" ${OLDORG} ${ORGNAME}
   updateDeployementOrgs master "update prod space name" "*" fs-intake-prod public-production
 
   #Staging instance needs to be run manually because of recurrent use of the term
   updateIntakeDevSpaceName()
   {
-  git checkout "$1"
-  sed -i 's/fs-intake-staging/public-staging/g' circle.yml
-  sed - i 's/= '\''fs-intake-staging'\''/= '\''public-staging'\''/g'
-  git add .
-  git commit -m "update dev space name"
-  git push origin "$1"
+    git checkout "${1}"
+    sed -i 's/fs-intake-staging/public-staging/g' "./circle.yml"
+    sed - i "s/= 'fs-intake-staging'/= 'public-staging'/g" "./cg-deploy/deploy.sh"
+    git add .
+    git commit -m "update dev space name"
+    git push origin "${1}"
   }
   updateIntakeDevSpaceName dev
   updateIntakeDevSpaceName master
@@ -156,10 +166,10 @@ fi
 
 # Push apps on new org
 brew install yarn
-cd frontend
+cd frontend || return
 yarn
 ng build --prod --env=prod;
-cf t -o $ORGNAME -s public-production
+cf t -o ${ORGNAME} -s public-production
 git checkout master
 cf push forest-service-epermit -f "./cg-deploy/manifests/production/manifest-frontend.yml"
 cf push fs-intake-api -f "./cg-deploy/manifests/production/manifest-api.yml"
@@ -167,7 +177,7 @@ cd .. || return
 
 cf t -s public-staging
 git checkout dev
-cd frontend
+cd frontend || return
 yarn
 ng build --prod --env=prod;
 cf push fs-intake-staging -f "./cg-deploy/manifests/staging/manifest-frontend-staging.yml"
