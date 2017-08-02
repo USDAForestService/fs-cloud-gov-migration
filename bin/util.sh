@@ -18,3 +18,9 @@ updateDeployementOrgs()
   git commit -m "${4}"
   git push origin "${1}"
 }
+
+deleteService()
+{
+  cf unbind-service "${1}" "${2}"
+  cf delete-service "${2}" -f
+}
