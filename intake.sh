@@ -52,7 +52,12 @@ deployFrontEnd(){
   yarn
   ng build --prod --env=prod;
   cd ..
-  cf push forest-service-epermit -f "./cg-deploy/manifests/"${2}"/manifest-frontend.yml"
-  cf push fs-intake-api -f "./cg-deploy/manifests/"${2}"/manifest-api.yml"
+  if [ "${2}" == "staging" ]; then
+      MANIFEST_SUFFIX="-staging"
+    else
+      MANIFEST_SUFFIX=""
+  fi
+  cf push forest-service-epermit -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
+  cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
   git reset --hard #because yarn lock will likely change
 }
