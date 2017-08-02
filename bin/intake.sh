@@ -55,8 +55,10 @@ deployFrontEnd(){
   cd ..
   if [ "${2}" == "staging" ]; then
       MANIFEST_SUFFIX="-staging"
+      APP="fs-intake-staging"
     else
       MANIFEST_SUFFIX=""
+      APP="forest-service-epermit"
   fi
   cf push forest-service-epermit -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
   cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
