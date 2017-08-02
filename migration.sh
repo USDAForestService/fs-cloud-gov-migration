@@ -11,9 +11,9 @@ ORGNAME=usda-forest-service
 OLDORG=gsa-acq-proto
 
 # Import Env vars and module scripts
-source env.sh
-source middlelayer.sh
-source intake.sh
+source ./bin/env.sh
+source ./bin/middlelayer.sh
+source ./bin/intake.sh
 
 # Download existing apps as sumbmodules
 git submodule add https://github.com/18F/fs-intake-module.git fs-intake-module

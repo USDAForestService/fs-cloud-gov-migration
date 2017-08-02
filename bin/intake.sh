@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source util.sh
+
 createIntakeServices()
 {
   cf t -s ${1}
