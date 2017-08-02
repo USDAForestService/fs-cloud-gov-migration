@@ -24,7 +24,31 @@ If you would like to not run the migration tasks and just create the new apps an
 `./migration.sh false`
 
 ## Afterwards
+### Update CI Keys
 Deployer credentials on `circle ci` should be updated to the new deployer accounts.
+
+### migrate middlelayer users
+Create users on the middlelayer. Using this script.
+```
+cf t -s api-staging
+cf ssh fs-middlelayer-api
+export HOME=/home/vcap/app
+export TMPDIR=/home/vcap/tmp
+cd /home/vcap/app
+[ -d /home/vcap/app/.profile.d ] && for f in /home/vcap/app/.profile.d/*.sh; do source "$f"; done
+source .profile.d/nodejs.sh
+node cmd/createUser.js -u -p <MIDDLE_SERVICE_DEV_MIDDLELAYER_USERNAME> <MIDDLE_SERVICE_DEV_MIDDLELAYER_PASSWORD> -r admin
+
+cf t -s api-production
+cf ssh fs-middlelayer-api-staging
+export HOME=/home/vcap/app
+export TMPDIR=/home/vcap/tmp
+cd /home/vcap/app
+[ -d /home/vcap/app/.profile.d ] && for f in /home/vcap/app/.profile.d/*.sh; do source "$f"; done
+source .profile.d/nodejs.sh
+node cmd/createUser.js -u -p <MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME> <MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD> -r admin
+```
+
 
 ## Contributing
 
