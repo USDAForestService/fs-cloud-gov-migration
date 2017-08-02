@@ -21,7 +21,7 @@ In bash shell script run:
 
 If you would like to not run the migration tasks and just create the new apps and corresponding services within an org run:
 
-`./migration.sh `
+`./migration.sh false`
 
 ## Afterwards
 Deployer credentials on `circle ci` should be updated to the new deployer accounts.
