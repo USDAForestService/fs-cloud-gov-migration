@@ -7,6 +7,7 @@ createIntakeServices()
   cf t -s ${1}
   cf create-service aws-rds shared-psql intake-db
   cf create-service s3 basic intake-s3
+  cf create-service s3 basic certs
   cf create-service cloud-gov-service-account space-deployer intake-deployer
   cf create-service-key intake-deployer circle-ci-"${1}"
   cf service-key intake-deployer circle-ci-"${1}"

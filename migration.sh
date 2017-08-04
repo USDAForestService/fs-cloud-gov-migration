@@ -33,7 +33,7 @@ cf create-space public-production
 #REBUILD MIDDLELAYER APPLICATION
 cd fs-middlelayer-api || return
 
-createMiddlelayerServices api-staging "${NRM_SUDS_URL_SERVICE_PROD_SUDS_API_URL}" "${NRM_SUDS_URL_SERVICE_password}" "${NRM_SUDS_URL_SERVICE_username}" "${AUTH_SERVICE_DEV_JWT_SECRET_KEY}"
+createMiddlelayerServices api-staging "${NRM_SUDS_URL_SERVICE_DEV_SUDS_API_URL}" "${NRM_SUDS_URL_SERVICE_password}" "${NRM_SUDS_URL_SERVICE_username}" "${AUTH_SERVICE_DEV_JWT_SECRET_KEY}"
 createMiddlelayerServices api-production "${NRM_SUDS_URL_SERVICE_PROD_SUDS_API_URL}" "${NRM_SUDS_URL_SERVICE_password}" "${NRM_SUDS_URL_SERVICE_username}" "${AUTH_SERVICE_PROD_JWT_SECRET_KEY}"
 
 if $FOR_MIGRATION; then
