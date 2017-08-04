@@ -1,2 +1,3 @@
 env.sh
 bin/env.sh
+bin/s3-helper.sh
