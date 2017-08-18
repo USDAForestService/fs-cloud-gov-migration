@@ -6,6 +6,9 @@ freeOldOrgUrl()
   cf delete-route -f app.cloud.gov --hostname "${3}"
 }
 
+echoTest(){
+  echo "came from util"
+}
 updateDeployementOrgs()
 {
   git fetch
@@ -24,6 +27,12 @@ deleteService()
   cf t -s "${1}"
   cf unbind-service "${2}" "${3}"
   cf delete-service "${3}" -f
+}
+
+bindAndRestage()
+{
+  cf bind-service "${1}" "${2}"
+  cf restage "${1}"
 }
 
 rebuildCupsService() #space #bound-app #service #json

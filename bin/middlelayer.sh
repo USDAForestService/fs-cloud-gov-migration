@@ -1,5 +1,5 @@
 #!/bin/bash
-source util.sh
+# source ./util.sh <- now sourced in migration
 
 createMiddlelayerServices()
 {
