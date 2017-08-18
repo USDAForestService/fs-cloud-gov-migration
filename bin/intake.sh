@@ -22,7 +22,7 @@ createIntakeServices()
   cf cups intake-client-service -p "${INTAKE_AUTH_SERVICE_JSON}"
 
   #Todo eAuth and login services
-  INTAKE_LOGIN_SERVICE_JSON="{\"cert\": \"${8}\", \"entrypoint\": \"https://idp.int.login.gov/api/saml/auth\", \"issuer\": \"${9}\", \"privatekey\": \"${10}\"}"
+  INTAKE_LOGIN_SERVICE_JSON="{\"cert\": \"${8}\", \"entrypoint\": \"https://idp.int.login.gov/api/saml/auth\", \"issuer\": \"${9}\", \"privatekey\": \"${10}\", \"decryptcert\": \"${11}\"}"
   cf cups login-service-provider -p "${INTAKE_LOGIN_SERVICE_JSON}"
 }
 
