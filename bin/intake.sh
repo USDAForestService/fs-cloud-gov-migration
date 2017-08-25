@@ -61,11 +61,14 @@ deployFrontEnd(){
   if [ "${2}" == "staging" ]; then
       MANIFEST_SUFFIX="-staging"
       APP="fs-intake-staging"
-    else
+  elif [ "${2}" == "login-test" ]; then
+    MANIFEST_SUFFIX="-login-test"
+    APP="fs-intake-api-login-test"
+  else
       MANIFEST_SUFFIX=""
       APP="forest-service-epermit"
   fi
-  cf push forest-service-epermit -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
+  cf push "${APP}" -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
   cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
   git reset --hard #because yarn lock will likely change
 }
