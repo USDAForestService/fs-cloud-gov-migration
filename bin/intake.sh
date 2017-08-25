@@ -23,7 +23,8 @@ createIntakeServices()
   cf cups intake-client-service -p "${INTAKE_AUTH_SERVICE_JSON}"
 
   #Todo eAuth and login services
-  INTAKE_LOGIN_SERVICE_JSON="{\"issuer\": \"${8}\", \"IDP_USERNAME\": \"${9}\", \"IDP_PASSWORD\": \"${10}\"}"
+  INTAKE_LOGIN_SERVICE_JSON="{\"jwk\": ${11}, \"issuer\": \"${8}\", \"IDP_USERNAME\": \"${9}\", \"IDP_PASSWORD\": \"${10}\"}"
+  # echo "${INTAKE_LOGIN_SERVICE_JSON}"
   cf cups login-service-provider -p "${INTAKE_LOGIN_SERVICE_JSON}"
 }
 

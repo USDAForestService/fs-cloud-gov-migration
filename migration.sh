@@ -65,13 +65,13 @@ if $NOT_REBUILD_SERVICE; then
   cd fs-intake-module || return
 fi
 
-if ! ($NOT_REBUILD_SERVICE);then
+if ! ($NOT_REBUILD_SERVICE);then #ie if we are just rebuilding services
   deleteService public-production fs-intake-api login-service-provider
 fi
 createIntakeServices public-production \
 "${MIDDLE_SERVICE_PROD_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME}" \
  "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_USERNAME}" \
- "${LOGIN_SERVICE_PROVIDER_PROD_issuer}" "${LOGIN_SERVICE_PROVIDER_PROD_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_PROD_basic_auth_pass}"
+ "${LOGIN_SERVICE_PROVIDER_PROD_issuer}" "${LOGIN_SERVICE_PROVIDER_PROD_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_PROD_basic_auth_pass}" "${LOGIN_SERVICE_PROVIDER_PROD_jwk}"
 
 if ! ($NOT_REBUILD_SERVICE);then
   bindAndRestage fs-intake-api login-service-provider
@@ -79,9 +79,10 @@ if ! ($NOT_REBUILD_SERVICE);then
 fi
 createIntakeServices public-staging \ "${MIDDLE_SERVICE_DEV_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_DEV_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_DEV_MIDDLELAYER_USERNAME}" \
  "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_USERNAME}" \
- "${LOGIN_SERVICE_PROVIDER_DEV_issuer}" "${LOGIN_SERVICE_PROVIDER_DEV_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_DEV_basic_auth_pass}"
+ "${LOGIN_SERVICE_PROVIDER_DEV_issuer}" "${LOGIN_SERVICE_PROVIDER_DEV_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_DEV_basic_auth_pass}" "${LOGIN_SERVICE_PROVIDER_DEV_jwk}"
+
 if ! ($NOT_REBUILD_SERVICE);then
-bindAndRestage fs-intake-api-staging login-service-provider
+  bindAndRestage fs-intake-api-staging login-service-provider
 fi
 
 if $NOT_REBUILD_SERVICE; then
