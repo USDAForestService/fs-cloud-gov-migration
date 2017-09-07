@@ -8,7 +8,7 @@ code in two separate repositories.
 
 The repositories are the [https://github.com/18f/fs-intake-module] and the [https://github.com/18f/fs-middlelayer-api].
 
-Each repository, has both a `staging` and  `production` housed in a separate space in the org.
+Each repository, has both a `staging` and `production` housed in a separate space in the org.
 
 At this point the migration does not include any migration of the data from either database.
 

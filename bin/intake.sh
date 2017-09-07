@@ -22,10 +22,12 @@ createIntakeServices()
   INTAKE_AUTH_SERVICE_JSON="{\"INTAKE_CLIENT_BASE_URL\": \"${5}\", \"INTAKE_PASSWORD\": \"${6}\", \"INTAKE_USERNAME\": \"${7}\"}"
   cf cups intake-client-service -p "${INTAKE_AUTH_SERVICE_JSON}"
 
-  #Todo eAuth and login services
   INTAKE_LOGIN_SERVICE_JSON="{\"jwk\": ${11}, \"issuer\": \"${8}\", \"IDP_USERNAME\": \"${9}\", \"IDP_PASSWORD\": \"${10}\"}"
   # echo "${INTAKE_LOGIN_SERVICE_JSON}"
   cf cups login-service-provider -p "${INTAKE_LOGIN_SERVICE_JSON}"
+
+  INTAKE_EAUTH_SERVICE_JSON="{\"issuer\": \"${12}\", \"cert\": \"${13}\", \"privatekey\": \"${14}\", \"entrypoint\": \"${15}\"}"
+  cf cups eauth-service-provider -p "${INTAKE_EAUTH_SERVICE_JSON}"
 }
 
 freeOldIntakeOrgUrls()
@@ -63,12 +65,12 @@ deployFrontEnd(){
       APP="fs-intake-staging"
   elif [ "${2}" == "login-test" ]; then
     MANIFEST_SUFFIX="-login-test"
-    APP="fs-intake-api-login-test"
+    APP="fs-intake-login-test"
   else
       MANIFEST_SUFFIX=""
       APP="forest-service-epermit"
   fi
   cf push "${APP}" -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
-  cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
+  # cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
   git reset --hard #because yarn lock will likely change
 }
