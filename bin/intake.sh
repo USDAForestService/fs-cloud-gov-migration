@@ -8,7 +8,6 @@ createIntakeServices()
   cf t -s ${1}
   cf create-service aws-rds shared-psql intake-db
   cf create-service s3 basic intake-s3
-  cf create-service s3 basic certs
   cf create-service cloud-gov-service-account space-deployer intake-deployer
   cf create-service-key intake-deployer circle-ci-"${1}"
   cf service-key intake-deployer circle-ci-"${1}"
@@ -22,10 +21,12 @@ createIntakeServices()
   INTAKE_AUTH_SERVICE_JSON="{\"INTAKE_CLIENT_BASE_URL\": \"${5}\", \"INTAKE_PASSWORD\": \"${6}\", \"INTAKE_USERNAME\": \"${7}\"}"
   cf cups intake-client-service -p "${INTAKE_AUTH_SERVICE_JSON}"
 
-  INTAKE_LOGIN_SERVICE_JSON="{\"jwk\": ${11}, \"issuer\": \"${8}\", \"IDP_USERNAME\": \"${9}\", \"IDP_PASSWORD\": \"${10}\"}"
-  cf cups login-service-provider -p "${INTAKE_LOGIN_SERVICE_JSON}"
+  # #single signon services
+  cf cups login-service-provider -p "${8}"
+  cf cups eauth-service-provider -p "${9}"
 
-  cf cups eauth-service-provider-test -p "${12}"
+  #email settings
+  cf cups smtp-service -p "${10}"
 }
 
 freeOldIntakeOrgUrls()

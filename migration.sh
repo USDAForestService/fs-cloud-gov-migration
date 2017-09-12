@@ -72,7 +72,8 @@ createIntakeServices public-production \
 "${MIDDLE_SERVICE_PROD_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME}" \
  "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_USERNAME}" \
  "${LOGIN_SERVICE_PROVIDER_PROD_issuer}" "${LOGIN_SERVICE_PROVIDER_PROD_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_PROD_basic_auth_pass}" "${LOGIN_SERVICE_PROVIDER_PROD_jwk}" \
-"./json-envs/eauth-dev.json"
+"./json-envs/eauth-dev.json" \
+"./json-envs/google-relay-email.json"
 
 if ! ($NOT_REBUILD_SERVICE);then
   bindAndRestage fs-intake-api login-service-provider
@@ -81,8 +82,9 @@ fi
 createIntakeServices public-staging \
   "${MIDDLE_SERVICE_DEV_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_DEV_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_DEV_MIDDLELAYER_USERNAME}" \
  "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_USERNAME}" \
- "${LOGIN_SERVICE_PROVIDER_DEV_issuer}" "${LOGIN_SERVICE_PROVIDER_DEV_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_DEV_basic_auth_pass}" "${LOGIN_SERVICE_PROVIDER_DEV_jwk}" \
- "./json-envs/eauth-dev.json"
+ "./json-envs/login-dev.json" \
+ "./json-envs/eauth-dev.json" \
+ "./json-envs/google-relay-email.json"
 
 
 if ! ($NOT_REBUILD_SERVICE);then
