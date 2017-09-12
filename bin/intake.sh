@@ -23,11 +23,9 @@ createIntakeServices()
   cf cups intake-client-service -p "${INTAKE_AUTH_SERVICE_JSON}"
 
   INTAKE_LOGIN_SERVICE_JSON="{\"jwk\": ${11}, \"issuer\": \"${8}\", \"IDP_USERNAME\": \"${9}\", \"IDP_PASSWORD\": \"${10}\"}"
-  # echo "${INTAKE_LOGIN_SERVICE_JSON}"
   cf cups login-service-provider -p "${INTAKE_LOGIN_SERVICE_JSON}"
 
-  INTAKE_EAUTH_SERVICE_JSON="{\"issuer\": \"${12}\", \"cert\": \"${13}\", \"privatekey\": \"${14}\", \"entrypoint\": \"${15}\"}"
-  cf cups eauth-service-provider -p "${INTAKE_EAUTH_SERVICE_JSON}"
+  cf cups eauth-service-provider-test -p "${12}"
 }
 
 freeOldIntakeOrgUrls()
