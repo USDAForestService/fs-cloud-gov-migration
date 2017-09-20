@@ -31,6 +31,7 @@ if $NOT_REBUILD_SERVICE; then
   cf create-space api-production
   cf create-space public-staging
   cf create-space public-production
+  cf create-space trees-staging
 
   #REBUILD MIDDLELAYER APPLICATION
   cd fs-middlelayer-api || return
@@ -86,6 +87,13 @@ createIntakeServices public-staging \
  "./json-envs/eauth-dev.json" \
  "./json-envs/google-relay-email.json"
 
+ createIntakeServices trees-staging \
+ "${MIDDLE_SERVICE_TREE_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_TREE_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_TREE_MIDDLELAYER_USERNAME}" \
+  "${INTAKE_CLIENT_SERVICE_TREE_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_TREE_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_TREE_INTAKE_USERNAME}" \
+  "${LOGIN_SERVICE_PROVIDER_TREE_issuer}" "${LOGIN_SERVICE_PROVIDER_TREE_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_TREE_basic_auth_pass}" "${LOGIN_SERVICE_PROVIDER_TREE_jwk}" \
+ "./json-envs/eauth-dev-tree.json" \
+ "./json-envs/google-relay-email.json"
+
 
 if ! ($NOT_REBUILD_SERVICE);then
   bindAndRestage fs-intake-api-staging login-service-provider
@@ -105,4 +113,5 @@ if $NOT_REBUILD_SERVICE; then
   brew install yarn
   deployFrontEnd master production
   deployFrontEnd dev staging
+  deployFrontEnd master trees-staging
 fi
