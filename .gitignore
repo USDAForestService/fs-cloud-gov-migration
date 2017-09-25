@@ -5,3 +5,5 @@ bin/login-dev.json
 bin/login-prod.json
 
 *json
+
+json-envs/*

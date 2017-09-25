@@ -12,21 +12,7 @@ createIntakeServices()
   cf create-service-key intake-deployer circle-ci-"${1}"
   cf service-key intake-deployer circle-ci-"${1}"
 
-  #Create user provided services
-  #create service and provide credentials for connection to the middlelayer-service
-  MIDDLELAYER_SERVICE_JSON="{\"MIDDLELAYER_BASE_URL\": \"${2}\", \"MIDDLELAYER_PASSWORD\": \"${3}\", \"MIDDLELAYER_USERNAME\": \"${4}\"}"
-  cf cups middlelayer-service -p "${MIDDLELAYER_SERVICE_JSON}"
-
-  # Create basic http auth for the api
-  INTAKE_AUTH_SERVICE_JSON="{\"INTAKE_CLIENT_BASE_URL\": \"${5}\", \"INTAKE_PASSWORD\": \"${6}\", \"INTAKE_USERNAME\": \"${7}\"}"
-  cf cups intake-client-service -p "${INTAKE_AUTH_SERVICE_JSON}"
-
-  # #single signon services
-  cf cups login-service-provider -p "${8}"
-  cf cups eauth-service-provider -p "${9}"
-
-  #email settings
-  cf cups smtp-service -p "${10}"
+  cf multi-cups-plugin "${2}"
 }
 
 freeOldIntakeOrgUrls()
@@ -70,6 +56,6 @@ deployFrontEnd(){
       APP="forest-service-epermit"
   fi
   cf push "${APP}" -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
-  # cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
+  cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
   git reset --hard #because yarn lock will likely change
 }

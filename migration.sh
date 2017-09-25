@@ -36,8 +36,8 @@ if $NOT_REBUILD_SERVICE; then
   #REBUILD MIDDLELAYER APPLICATION
   cd fs-middlelayer-api || return
 
-  createMiddlelayerServices api-staging "${NRM_SUDS_URL_SERVICE_DEV_SUDS_API_URL}" "${NRM_SUDS_URL_SERVICE_password}" "${NRM_SUDS_URL_SERVICE_username}" "${AUTH_SERVICE_DEV_JWT_SECRET_KEY}"
-  createMiddlelayerServices api-production "${NRM_SUDS_URL_SERVICE_PROD_SUDS_API_URL}" "${NRM_SUDS_URL_SERVICE_password}" "${NRM_SUDS_URL_SERVICE_username}" "${AUTH_SERVICE_PROD_JWT_SECRET_KEY}"
+  createMiddlelayerServices api-staging "middlelayer-services-staging.json"
+  createMiddlelayerServices api-production "middlelayer-services-production.json"
 
   if $FOR_MIGRATION; then
     #Free urls for middlelayer for both production and staging
@@ -66,38 +66,9 @@ if $NOT_REBUILD_SERVICE; then
   cd fs-intake-module || return
 fi
 
-if ! ($NOT_REBUILD_SERVICE);then #ie if we are just rebuilding services
-  deleteService public-production fs-intake-api login-service-provider
-fi
-createIntakeServices public-production \
-"${MIDDLE_SERVICE_PROD_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME}" \
- "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_PROD_INTAKE_USERNAME}" \
- "${LOGIN_SERVICE_PROVIDER_PROD_issuer}" "${LOGIN_SERVICE_PROVIDER_PROD_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_PROD_basic_auth_pass}" "${LOGIN_SERVICE_PROVIDER_PROD_jwk}" \
-"./json-envs/eauth-dev.json" \
-"./json-envs/google-relay-email.json"
-
-if ! ($NOT_REBUILD_SERVICE);then
-  bindAndRestage fs-intake-api login-service-provider
-  deleteService public-staging fs-intake-api-staging login-service-provider
-fi
-createIntakeServices public-staging \
-  "${MIDDLE_SERVICE_DEV_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_DEV_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_DEV_MIDDLELAYER_USERNAME}" \
- "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_DEV_INTAKE_USERNAME}" \
- "./json-envs/login-dev.json" \
- "./json-envs/eauth-dev.json" \
- "./json-envs/google-relay-email.json"
-
- createIntakeServices trees-staging \
- "${MIDDLE_SERVICE_TREE_MIDDLELAYER_BASE_URL}" "${MIDDLE_SERVICE_TREE_MIDDLELAYER_PASSWORD}" "${MIDDLE_SERVICE_TREE_MIDDLELAYER_USERNAME}" \
-  "${INTAKE_CLIENT_SERVICE_TREE_INTAKE_CLIENT_BASE_URL}" "${INTAKE_CLIENT_SERVICE_TREE_INTAKE_PASSWORD}" "${INTAKE_CLIENT_SERVICE_TREE_INTAKE_USERNAME}" \
-  "${LOGIN_SERVICE_PROVIDER_TREE_issuer}" "${LOGIN_SERVICE_PROVIDER_TREE_basic_auth_un}" "${LOGIN_SERVICE_PROVIDER_TREE_basic_auth_pass}" "${LOGIN_SERVICE_PROVIDER_TREE_jwk}" \
- "./json-envs/eauth-dev-tree.json" \
- "./json-envs/google-relay-email.json"
-
-
-if ! ($NOT_REBUILD_SERVICE);then
-  bindAndRestage fs-intake-api-staging login-service-provider
-fi
+createIntakeServices public-production "intake-services-production.json"
+createIntakeServices public-staging "intake-services-staging.json"
+createIntakeServices trees-staging "intake-services-trees.json"
 
 if $NOT_REBUILD_SERVICE; then
   if $FOR_MIGRATION; then

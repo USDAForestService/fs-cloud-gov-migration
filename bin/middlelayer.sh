@@ -10,14 +10,7 @@ createMiddlelayerServices()
   cf create-service-key fs-api-deployer circle-ci-"${1}"
   cf service-key fs-api-deployer circle-ci-"${1}"
 
-  #User Provided services for credentials
-  #Connection to SUDS
-  NRM_SERVICES_JSON="{\"SUDS_API_URL\": \"${2}\", \"password\": \"${3}\", \"username\": \"${4}\"}"
-  cf cups nrm-suds-url-service -p "${NRM_SERVICES_JSON}"
-
-  #Authenication with consumer services
-  AUTH_SERVICE_JSON="{\"JWT_SECRET_KEY\": \"${5}\"}"
-  cf cups auth-service -p "${AUTH_SERVICE_JSON}"
+  cf multi-cups-plugin "${2}"
 }
 
 deployerChanges()
