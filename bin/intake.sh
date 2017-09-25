@@ -48,9 +48,9 @@ deployFrontEnd(){
   if [ "${2}" == "staging" ]; then
       MANIFEST_SUFFIX="-staging"
       APP="fs-intake-staging"
-  elif [ "${2}" == "login-test" ]; then
-    MANIFEST_SUFFIX="-login-test"
-    APP="fs-intake-login-test"
+  elif [ "${2}" == "trees-staging" ]; then
+    MANIFEST_SUFFIX="-trees-staging"
+    APP="forest-service-trees-staging"
   else
       MANIFEST_SUFFIX=""
       APP="forest-service-epermit"
