@@ -3,3 +3,7 @@ bin/env.sh
 bin/s3-helper.sh
 bin/login-dev.json
 bin/login-prod.json
+
+*json
+
+json-envs/*
