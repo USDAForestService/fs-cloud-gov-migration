@@ -49,6 +49,48 @@ source .profile.d/nodejs.sh
 deps/0/bin/node app/cmd/createUser.js -u <MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME> -p <MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD> -r admin
 ```
 
+## Authenication
+### Eauth Certs
+#### X509
+`cert`: From the SAML provider from the ICAM partnership in the `<ds:X509Certificate>` key. This should be the same across environments.
+`private_key`: contents of the key from the following command:
+
+```
+openssl req -days 3650 -newkey rsa:2048 -nodes -keyout keys/saml.key.enc.usdaforestserviceepermitENVNAME \
+  -x509 -out certs/saml.crt.usdaforestserviceepermitENVNAME -config openssl-ENVNAME.conf
+```
+
+The cert will be proivded to the service provider via email.
+`issuer`: the service provider ID submitted via email to ICAM.
+
+`whitelist`: list of eAuth IDs that can access the admin interface.
+
+### Login.gov
+Generated with the following command
+
+```
+openssl req -days 3650 -newkey rsa:2048 -nodes -keyout keys/saml.key.enc.usdaforestserviceepermitENVNAME \
+  -x509 -out certs/saml.crt.usdaforestserviceepermitENVNAME -config openssl-login-tree.conf
+  ```
+
+Then convert the `saml.key.enc.FILE` or `pem` to a jwk.
+The public certificate will have to be registered in the int.idp.login.gov dashboard.
+`issuer`: the SPID for login.gov partnership registered in the dashboard.
+`idp_username` & `idp_password`: Basic auth for the login.gov dev service provider.
+
+
+## Intake service
+The url for the frontend in the environment
+and the corresponding jwt_secret for the - verify.
+
+## SMTP service
+SMTP credentials and or just email to permit `node-mailer` to send emails.
+`admins`: an array of admins to recieve administrator emails from the system.
+
+# Middlelayer service
+URL and credentials of the middlelayer.
+
+
 
 ## Contributing
 
