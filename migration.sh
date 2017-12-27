@@ -19,7 +19,7 @@ source ./bin/intake.sh
 
 if $NOT_REBUILD_SERVICE; then
   # Download existing apps as sumbmodules
-  git submodule add https://github.com/18F/fs-intake-module.git fs-intake-module
+  git submodule add https://github.com/18F/fs-permit-platform.git fs-permit-platform
   git submodule add https://github.com/18F/fs-middlelayer-api.git fs-middlelayer-api
   git submodule -q foreach git pull -q origin master #update sumbmodules
 
@@ -63,7 +63,7 @@ if $NOT_REBUILD_SERVICE; then
   cd ..
 
   # CREATE INTAKE SERVICES APP
-  cd fs-intake-module || return
+  cd fs-permit-platform || return
 fi
 
 createIntakeServices public-production "intake-services-production.json"

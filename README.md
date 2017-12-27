@@ -6,7 +6,7 @@ This migration script is to port over the [U.S.F.S. Online Permit system](https:
 a new organization in cloud.gov. It consists of three applications with
 code in two separate repositories.
 
-The repositories are the [https://github.com/18f/fs-intake-module] and the [https://github.com/18f/fs-middlelayer-api].
+The repositories are the [https://github.com/18f/fs-permit-platform] and the [https://github.com/18f/fs-middlelayer-api].
 
 Each repository, has both a `staging` and `production` housed in a separate space in the org.
 
