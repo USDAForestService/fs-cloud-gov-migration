@@ -62,6 +62,11 @@ if $NOT_REBUILD_SERVICE; then
   cf push fs-middlelayer-api-staging -f "./cg-deploy/manifests/manifest-staging.yml"
   cd ..
 
+  # Create bucket for log dumps
+ cf t -o ${ORGNAME} -s api-production
+ cf create-service s3 basic log-bucket
+ cf create-service-key log-bucket deployer-key
+
   # CREATE INTAKE SERVICES APP
   cd fs-permit-platform || return
 fi
