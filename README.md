@@ -12,6 +12,8 @@ Each repository, has both a `staging` and `production` housed in a separate spac
 
 At this point the migration does not include any migration of the data from either database.
 
+`cf ssh` is currently disabled for the production cloud.gov `api-production` and `public-production` spaces.
+
 ## Running the script
 
 Enter all of your envs in `env.sh` (env-sample.sh) includes all the necessary variables.
@@ -22,6 +24,7 @@ In bash shell script run:
 If you would like to not run the migration tasks and just create the new apps and corresponding services within an org run:
 
 `./migration.sh false`
+
 
 ## Afterwards
 ### Update CI Keys
