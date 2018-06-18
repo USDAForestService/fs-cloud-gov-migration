@@ -59,3 +59,10 @@ deployFrontEnd(){
   cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
   git reset --hard #because yarn lock will likely change
 }
+
+createDomainRecord(){
+  cf t -o "${ORGNAME}" -s public-production
+  cf create-domain "${ORGNAME}" -s "${2}"
+  cf create-service custom-domain custom-domain "${1}"-domain -c '{"domains": ["${2}"]}'
+  cf service "${1}"-domain
+}

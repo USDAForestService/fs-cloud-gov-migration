@@ -11,6 +11,7 @@ ORGNAME=usda-forest-service
 OLDORG=gsa-acq-proto
 NOT_REBUILD_SERVICE=false
 
+
 # Import Env vars and module scripts
 source ./bin/env.sh
 source ./bin/util.sh
@@ -91,3 +92,5 @@ if $NOT_REBUILD_SERVICE; then
   deployFrontEnd dev staging
   deployFrontEnd master trees-staging
 fi
+
+createDomainRecord open-forest openforest.fs.usda.gov
