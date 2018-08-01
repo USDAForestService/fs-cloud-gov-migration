@@ -3,7 +3,7 @@
 // Load dependencies
 const assert = require('assert')
 const fs = require('fs')
-const pem2jwk = require('pem-jwk').pem2jwk
+const pem2jwk = require('pem-jwk').pem2jwk;
 
 const pemFileName = process.argv.slice(2,3)[0];
 console.log(pemFileName);
