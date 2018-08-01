@@ -1,6 +1,6 @@
 env.sh
 bin/env.sh
-bin/s3-helper.sh
+bin/helper/*.sh
 bin/login-dev.json
 bin/login-prod.json
 
