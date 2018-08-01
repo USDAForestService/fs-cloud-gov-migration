@@ -50,6 +50,20 @@ deps/0/bin/node app/cmd/createUser.js -u <MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNA
 ```
 
 ## Authenication
+
+The easiest way to to generate certificates that will last one year is by running the following script:
+```
+./certificate-generation/make.sh <WHERE-TO-PUT-THE-OUTPUT>
+```
+
+Prerequisites:
+`openssl` command line tool
+`node.js`
+
+This script will create 4 certificates and private keys for the identity providers that Open Forest uses.
+The private keys will all go into the user-provided services `VCAP-SERVICES` with cloud.gov.
+
+
 ### Eauth Certs
 #### X509
 `cert`: From the SAML provider from the ICAM partnership in the `<ds:X509Certificate>` key. This should be the same across environments.

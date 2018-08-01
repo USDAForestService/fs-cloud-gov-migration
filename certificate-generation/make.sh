@@ -6,7 +6,7 @@ mkdir "${DIRECTORY_PREFIX}"/keys
 
 export CURRENT_DIRECTORY=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 export ROOT_DIRECTORY="$(dirname "$CURRENT_DIRECTORY")"
-echo "${DIRECTORY_PREFIX}/*" >> "${ROOT_DIRECTORY}/.gitignore" # do not commit anything created
+echo "certificate-generation/${DIRECTORY_PREFIX}/*" >> "${ROOT_DIRECTORY}/.gitignore" # do not commit anything created
 
 
 # Generate a x509 certificate that will be converted into a cert and a JWK for the 

@@ -7,3 +7,4 @@ bin/login-prod.json
 *json
 
 json-envs/*
+certificate-generation/node_modules/*
