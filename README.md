@@ -12,6 +12,8 @@ Each repository, has both a `staging` and `production` housed in a separate spac
 
 At this point the migration does not include any migration of the data from either database.
 
+`cf ssh` is currently disabled for the production cloud.gov `api-production` and `public-production` spaces.
+
 ## Running the script
 
 Enter all of your envs in `env.sh` (env-sample.sh) includes all the necessary variables.
@@ -22,6 +24,7 @@ In bash shell script run:
 If you would like to not run the migration tasks and just create the new apps and corresponding services within an org run:
 
 `./migration.sh false`
+
 
 ## Afterwards
 ### Update CI Keys
@@ -49,9 +52,49 @@ source .profile.d/nodejs.sh
 deps/0/bin/node app/cmd/createUser.js -u <MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME> -p <MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD> -r admin
 ```
 
-## Authenication
+## Authenication Certificates for eAuth and Login.gov
+
+The easiest way to to generate certificates that will last one year is by running the following script:
+```
+./certificate-generation/make.sh <WHERE-TO-PUT-THE-OUTPUT>
+```
+
+Prerequisites:
+`openssl` command line tool
+`node.js`
+`conf` files:
+   - openssl-login-tree.conf
+   - openssl-login-prod.conf
+   - openssl-eauth-dev.conf
+   - openssl-eauth-prod.conf
+
+The `conf` file should just include the following information. (Please replace <VARIABLE> with your information).
+```
+[ req ]
+default_bits           = 2048
+distinguished_name     = req_distinguished_name
+prompt                 = no
+
+[ req_distinguished_name ]
+commonName             = <API_APP_URL>
+organizationName       = USDA
+organizationalUnitName = FORESTSERVICE
+localityName           = Washington
+stateOrProvinceName    = DC
+countryName            = US
+emailAddress           = fs@fs.fed.us
+```
+
+This script will create 4 certificates and private keys for the identity providers that Open Forest uses.
+The private keys will all go into the user-provided services `VCAP-SERVICES` with cloud.gov.
+
+
 ### Eauth Certs
-#### X509
+```
+environment: platform
+name: eauth-service-provider
+```
+
 `cert`: From the SAML provider from the ICAM partnership in the `<ds:X509Certificate>` key. This should be the same across environments.
 `private_key`: contents of the key from the following command:
 
@@ -66,6 +109,11 @@ The cert will be proivded to the service provider via email.
 `whitelist`: list of eAuth IDs that can access the admin interface.
 
 ### Login.gov
+```
+environment: platform
+name: login-service-provider
+```
+
 Generated with the following command
 
 ```
@@ -78,19 +126,67 @@ The public certificate will have to be registered in the int.idp.login.gov dashb
 `issuer`: the SPID for login.gov partnership registered in the dashboard.
 `idp_username` & `idp_password`: Basic auth for the login.gov dev service provider.
 
+## User provided services
+The user provided services are referenced in VCAP-constant files in the platform and middlelayer services. This section is more about how to generate some of the certificates for the services.
 
-## Intake service
+### Intake service
+```
+environment: platform
+name: intake-client-service
+```
+
 The url for the frontend in the environment
 and the corresponding jwt_secret for the - verify.
 
-## SMTP service
+### SMTP service
+```
+environment: platform
+name: smtp-service
+```
+
 SMTP credentials and or just email to permit `node-mailer` to send emails.
 `admins`: an array of admins to recieve administrator emails from the system.
 
-# Middlelayer service
+### Middlelayer service
+```
+environment: platform
+name: middlelayer-service
+```
+
 URL and credentials of the middlelayer.
 
+### Pay.gov
+```
+environment: platform
+name: pay-gov
+```
 
+The certificates for pay.gov can be generated with the following commands:
+
+```
+openssl pkcs12 -in $1 -out ca.pem -cacerts -nokeys -nodes
+openssl pkcs12 -in $1 -out client.pem -clcerts -nokeys -nodes
+openssl pkcs12 -in $1 -out key.pem -nocerts -nodes
+```
+
+The resulting private key should be added to the `private_key` in the user-provided service. The `password` used to generate will need to be added as well.
+
+
+### New Relic
+```
+environment: platform
+name: new-relic
+```
+
+License key for new relic monitor
+
+### JWT 
+```
+environment: platform
+name: jwt
+```
+
+Enables JWT for Christmas tree permit retrieval
 
 ## Contributing
 

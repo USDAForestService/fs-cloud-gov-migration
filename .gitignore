@@ -1,8 +1,10 @@
 env.sh
-bin/helper/*
+bin/env.sh
+bin/helper/*.sh
 bin/login-dev.json
 bin/login-prod.json
 
 *json
 
 json-envs/*
+certificate-generation/node_modules/*
