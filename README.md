@@ -14,6 +14,8 @@ At this point the migration does not include any migration of the data from eith
 
 `cf ssh` is currently disabled for the production cloud.gov `api-production` and `public-production` spaces.
 
+This repo may also help you manage the [connected services of the application](https://github.com/18F/fs-open-forest/wiki/Ongoing-site-architecture#connected-services).
+
 ## Running the script
 
 Enter all of your envs in `env.sh` (env-sample.sh) includes all the necessary variables.
