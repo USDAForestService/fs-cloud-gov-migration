@@ -166,12 +166,21 @@ name: pay-gov
 The certificates for pay.gov can be generated with the following commands:
 
 ```
-openssl pkcs12 -in $1 -out ca.pem -cacerts -nokeys -nodes
-openssl pkcs12 -in $1 -out client.pem -clcerts -nokeys -nodes
-openssl pkcs12 -in $1 -out key.pem -nocerts -nodes
+openssl pkcs12 -in paygov.pfx -out outfile.pem -nodes
 ```
 
-The resulting private key should be added to the `private_key` in the user-provided service. The `password` used to generate will need to be added as well.
+The resulting file will have the `cert`, the leveraged `certificate certs` and the private key. The `certificate` will need to be an array of the certificates as strings in the following format:
+```
+"certificate": [
+        "-----BEGIN CERTIFICATE-----\ncert1-----END CERTIFICATE-----\n",
+        "-----BEGIN CERTIFICATE-----\ncert2-----END CERTIFICATE-----\n",
+        "-----BEGIN CERTIFICATE-----\ncert3-----END CERTIFICATE-----\n",
+        "-----BEGIN CERTIFICATE-----\ncert4-----END CERTIFICATE-----\n",
+        "-----BEGIN CERTIFICATE-----\ncert5-----END CERTIFICATE-----\n"
+      ],
+```
+
+ The private key should be added to the `private_key` in the user-provided service. The `password` used to generate will need to be added as well.
 
 
 ### New Relic

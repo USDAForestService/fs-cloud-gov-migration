@@ -1,5 +1,7 @@
 ## CHANGELOG
 
+* 10-18-2018 update pay.gov prod client url to http://www.pay.gov/tcsonline/
+* 10-17-2018 update pay.gov certificate information
 * 10-11-2018 point pay.gov to pay.gov production
 * 9-28-2018 remove members of team in offboarding
 * 9-28-2018 update to generic usda email in production
