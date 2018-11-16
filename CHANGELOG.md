@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+* 11-15-2018 add Christmas Forest admins to staging and production
+* 11-07-2018 update all envs new-relic key to USFS key
+* 11-02-2018 Update json-envs/middlelayer/middlelayer-services-dev.json#nrm-suds-url-service to NRM test URL
+* 11-02-2018 revert middlelayer staging back to nrmdev
 * 10-18-2018 update pay.gov prod client url to http://www.pay.gov/tcsonline/
 * 10-17-2018 update pay.gov certificate information
 * 10-11-2018 point pay.gov to pay.gov production
