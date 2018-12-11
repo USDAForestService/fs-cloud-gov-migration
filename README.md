@@ -19,10 +19,10 @@ This repo may also help you manage the [connected services of the application](h
 
 ### Prepare environment variables
 Fill the following files with the appropriate credientials per environment. Please refer to (/#user-provided-services) to see what should be in each file:
-`json-envs/intake/intake-services-trees.json` # Staging for the platform
-`json-envs/intake/intake-services-production.json` # Production for the platform
-`json-envs/middlelayer/middlelayer-services-staging.json` # Staging for the middlelayer
-`json-envs/middlelayer/middlelayer-services-production.json` # Production for the middlelayer
+* `json-envs/intake/intake-services-trees.json` # Staging for the platform
+* `json-envs/intake/intake-services-production.json` # Production for the platform
+* `json-envs/middlelayer/middlelayer-services-staging.json` # Staging for the middlelayer
+* `json-envs/middlelayer/middlelayer-services-production.json` # Production for the middlelayer
 
 Services themselves should be declared as such:
 ```
