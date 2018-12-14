@@ -165,6 +165,8 @@ The [user provided services a cloud foundry feature](https://docs.cloudfoundry.o
 
 These user provided services are parsed as environment variables in a vcap-constant file in both the [platform definitions](https://github.com/18F/fs-open-forest-platform/blob/dev/wiki/development/environment-variables.md) and [middlelayer services](https://github.com/18F/fs-open-forest-middlelayer-api#environment-variables). While each repsortoriy will give a better indication of the services use, here are some of the expected values and how to generate them.
 
+[For more on why we use then instead of environment variables](https://github.com/18F/fs-open-forest-platform/blob/dev/docs/development/environment-variables.md#required-environment-variables).
+
 ### User provided services for the platform
 #### Intake service
 ```
