@@ -70,8 +70,8 @@ if $NOT_REBUILD_SERVICE; then
   cd fs-open-forest-platform || return
 fi
 
-createIntakeServices platform-production "intake-services-production.json"
-createIntakeServices platform-staging "intake-services-staging.json"
+createIntakeServices platform-production "intake-services-production.json" ${ORGNAME}
+createIntakeServices platform-staging "intake-services-staging.json" ${ORGNAME}
 
 if $NOT_REBUILD_SERVICE; then
   if $FOR_MIGRATION; then
@@ -86,5 +86,5 @@ if $NOT_REBUILD_SERVICE; then
   # Push Intake apps on new org
   brew install yarn
   deployFrontEnd master production
-  deployFrontEnd master trees-staging
+  deployFrontEnd master staging
 fi

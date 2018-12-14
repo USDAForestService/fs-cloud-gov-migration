@@ -12,6 +12,12 @@ createIntakeServices()
   cf create-service-key intake-deployer circle-ci-"${1}"
   cf service-key intake-deployer circle-ci-"${1}"
 
+  if [ "${1}" == "platform-production" ]; then
+    cf create-domain ${3} openforest.fs.usda.gov
+    cf create-service custom-domain custom-domain my-domain \
+    -c '{"domains": ["openforest.fs.usda.gov"]}'
+  fi
+
   cf multi-cups-plugin "${2}"
 }
 
@@ -20,7 +26,7 @@ freeOldIntakeOrgUrls()
   freeOldOrgUrl fs-intake-staging fs-intake-staging fs-intake-staging
   freeOldOrgUrl fs-intake-staging fs-intake-api-staging fs-intake-api-staging
   freeOldOrgUrl fs-intake-prod fs-intake-api fs-intake-api
-  freeOldOrgUrl fs-intake-prod forest-service-epermit forest-service-intake
+  # unbind platform url manually because it has an associated route
 }
 
 updateIntakeDeployment(){
@@ -47,12 +53,10 @@ deployFrontEnd(){
   cd ..
   if [ "${2}" == "staging" ]; then
     MANIFEST_SUFFIX="-staging"
-    APP="forest-service-trees-staging"
   else
       MANIFEST_SUFFIX=""
-      APP="forest-service-epermit"
   fi
-  cf push "${APP}" -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
-  cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
+  cf push open-forest-platform"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
+  cf push open-forest-platform-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
   git reset --hard #because package lock will likely change
 }
