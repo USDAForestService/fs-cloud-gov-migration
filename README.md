@@ -11,7 +11,7 @@ The repositories are the [https://github.com/18f/fs-open-forest-platform] and th
 
 Each application is deployed in both a `staging` and `production` environment housed in a separate space within the org cloud.gov org. For more on cloud.gov orgs and spaces, please see the [cloud foundry docs](https://docs.cloudfoundry.org/concepts/roles.html)
 
-This migration script does not provide of either production or staging data held in the `s3` buckets or databases.
+This migration script does not provide either production or staging data held in the `s3` buckets or databases.
 
 This repo may also help you manage the [connected services of the application](https://github.com/18F/fs-open-forest/wiki/Ongoing-site-architecture#connected-services), bound within [VCAP_SERVICE](https://docs.cloudfoundry.org/buildpacks/node/node-service-bindings.html#creds) in the environment variables.
 
