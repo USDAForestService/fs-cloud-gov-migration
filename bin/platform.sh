@@ -31,8 +31,8 @@ updateIntakeDeployment(){
   git fetch
   git checkout "${1}"
   git pull origin "${1}"
-  sed -i '' "s/= 'fs-intake-staging'/= 'public-staging'/g" './cg-deploy/deploy.sh'
-  sed -i '' 's/fs-intake-staging/public-staging/g' './circle.yml'
+  sed -i '' "s/= 'fs-intake-staging'/= 'platform-staging'/g" './cg-deploy/deploy.sh'
+  sed -i '' 's/fs-intake-staging/platform-staging/g' './circle.yml'
   git add .
   git commit -m "update dev space name"
   git push origin "${1}"
@@ -46,10 +46,7 @@ deployFrontEnd(){
   ng build --prod --env=prod;
   cd ..
   if [ "${2}" == "staging" ]; then
-      MANIFEST_SUFFIX="-staging"
-      APP="fs-intake-staging"
-  elif [ "${2}" == "trees-staging" ]; then
-    MANIFEST_SUFFIX="-trees-staging"
+    MANIFEST_SUFFIX="-staging"
     APP="forest-service-trees-staging"
   else
       MANIFEST_SUFFIX=""
@@ -57,5 +54,5 @@ deployFrontEnd(){
   fi
   cf push "${APP}" -f "./cg-deploy/manifests/"${2}"/manifest-frontend"${MANIFEST_SUFFIX}".yml"
   cf push fs-intake-api"${MANIFEST_SUFFIX}" -f "./cg-deploy/manifests/"${2}"/manifest-api"${MANIFEST_SUFFIX}".yml"
-  git reset --hard #because yarn lock will likely change
+  git reset --hard #because package lock will likely change
 }
