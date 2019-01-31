@@ -14,7 +14,7 @@ createIntakeServices()
 
   if [ "${1}" == "platform-production" ]; then
     cf create-domain ${3} openforest.fs.usda.gov
-    cf create-service custom-domain custom-domain my-domain \
+    cf create-service custom-domain custom-domain open-forest-domain \
     -c '{"domains": ["openforest.fs.usda.gov"]}'
   fi
 
