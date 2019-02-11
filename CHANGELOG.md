@@ -1,5 +1,6 @@
 ## CHANGELOG
 
+* 11-19-2018 add 18f staging admin user
 * 11-15-2018 add Christmas Forest admins to staging and production
 * 11-07-2018 update all envs new-relic key to USFS key
 * 11-02-2018 Update json-envs/middlelayer/middlelayer-services-dev.json#nrm-suds-url-service to NRM test URL

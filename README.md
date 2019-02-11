@@ -18,7 +18,7 @@ This repo may also help you manage the [connected services of the application](h
 ## Running the script
 
 ### Prepare environment variables
-Fill the following files with the appropriate credientials per environment. Please refer to (/#user-provided-services) to see what should be in each file:
+Fill the following files with the appropriate credentials per environment. Please refer to (/#user-provided-services) to see what should be in each file:
 * `json-envs/intake/intake-services-trees.json` # Staging for the platform
 * `json-envs/intake/intake-services-production.json` # Production for the platform
 * `json-envs/middlelayer/middlelayer-services-staging.json` # Staging for the middlelayer
@@ -164,6 +164,8 @@ The public certificate will have to be registered in the int.idp.login.gov dashb
 The [user provided services a cloud foundry feature](https://docs.cloudfoundry.org/devguide/services/user-provided.html) to help manage external 3rd party services. This ecosystem makes heavy use of them in order to manage the credentials of integrated services.
 
 These user provided services are parsed as environment variables in a vcap-constant file in both the [platform definitions](https://github.com/18F/fs-open-forest-platform/blob/dev/wiki/development/environment-variables.md) and [middlelayer services](https://github.com/18F/fs-open-forest-middlelayer-api#environment-variables). While each repsortoriy will give a better indication of the services use, here are some of the expected values and how to generate them.
+
+[For more on why we use then instead of environment variables](https://github.com/18F/fs-open-forest-platform/blob/dev/docs/development/environment-variables.md#required-environment-variables).
 
 ### User provided services for the platform
 #### Intake service

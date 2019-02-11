@@ -15,29 +15,28 @@ NOT_REBUILD_SERVICE=false
 source ./bin/env.sh
 source ./bin/util.sh
 source ./bin/middlelayer.sh
-source ./bin/intake.sh
+source ./bin/platform.sh
 
 if $NOT_REBUILD_SERVICE; then
   # Download existing apps as sumbmodules
-  git submodule add https://github.com/18F/fs-permit-platform.git fs-permit-platform
-  git submodule add https://github.com/18F/fs-middlelayer-api.git fs-middlelayer-api
+  git submodule add https://github.com/18F/fs-open-forest-platform.git fs-open-forest-platform
+  git submodule add https://github.com/18F/fs-open-forest-middlelayer-api.git fs-open-forest-middlelayer-api
   git submodule -q foreach git pull -q origin master #update sumbmodules
 
   # Login to Cloud Foundry
   cf login --sso -a api.fr.cloud.gov -o ${ORGNAME}
 
   # CREATE ORG SPACES
-  cf create-space api-staging
-  cf create-space api-production
-  cf create-space public-staging
-  cf create-space public-production
-  cf create-space trees-staging
+  cf create-space middlelayer-staging
+  cf create-space middlelayer-production
+  cf create-space platform-staging
+  cf create-space platform-production
 
   #REBUILD MIDDLELAYER APPLICATION
-  cd fs-middlelayer-api || return
+  cd fs-open-forest-middlelayer-api || return
 
-  createMiddlelayerServices api-staging "middlelayer-services-staging.json"
-  createMiddlelayerServices api-production "middlelayer-services-production.json"
+  createMiddlelayerServices middlelayer-staging "middlelayer-services-staging.json"
+  createMiddlelayerServices middlelayer-production "middlelayer-services-production.json"
 
   if $FOR_MIGRATION; then
     #Free urls for middlelayer for both production and staging
@@ -48,32 +47,31 @@ if $NOT_REBUILD_SERVICE; then
   # Update cg-deploy orgs to Org name
   if $FOR_MIGRATION; then
     # On old org-
-    deployerChanges dev fs-api-prod api-production fs-api-staging api-staging
-    deployerChanges master fs-api-prod api-production fs-api-staging api-staging
+    deployerChanges dev fs-api-prod middlelayer-production fs-api-staging middlelayer-staging
+    deployerChanges master fs-api-prod middlelayer-production fs-api-staging middlelayer-staging
   fi
 
   # Push app on new org
-  cf t -o ${ORGNAME} -s api-production
+  cf t -o ${ORGNAME} -s middlelayer-production
   git checkout master
   cf push fs-middlelayer-api -f "./cg-deploy/manifests/manifest.yml"
 
-  cf t -s api-staging
+  cf t -s middlelayer-staging
   git checkout dev
   cf push fs-middlelayer-api-staging -f "./cg-deploy/manifests/manifest-staging.yml"
   cd ..
 
   # Create bucket for log dumps
- cf t -o ${ORGNAME} -s api-production
+ cf t -o ${ORGNAME} -s middlelayer-production
  cf create-service s3 basic log-bucket
  cf create-service-key log-bucket deployer-key
 
   # CREATE INTAKE SERVICES APP
-  cd fs-permit-platform || return
+  cd fs-open-forest-platform || return
 fi
 
-createIntakeServices public-production "intake-services-production.json"
-createIntakeServices public-staging "intake-services-staging.json"
-createIntakeServices trees-staging "intake-services-trees.json"
+createIntakeServices platform-production "intake-services-production.json" ${ORGNAME}
+createIntakeServices platform-staging "intake-services-staging.json" ${ORGNAME}
 
 if $NOT_REBUILD_SERVICE; then
   if $FOR_MIGRATION; then
@@ -88,6 +86,5 @@ if $NOT_REBUILD_SERVICE; then
   # Push Intake apps on new org
   brew install yarn
   deployFrontEnd master production
-  deployFrontEnd dev staging
-  deployFrontEnd master trees-staging
+  deployFrontEnd master staging
 fi
