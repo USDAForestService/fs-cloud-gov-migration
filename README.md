@@ -19,8 +19,10 @@ This repo may also help you manage the [connected services of the application](h
 
 ### Prepare environment variables
 Fill the following files with the appropriate credentials per environment. Please refer to (/#user-provided-services) to see what should be in each file:
+* `json-envs/intake/intake-services-dev.json` # Development for the platform
 * `json-envs/intake/intake-services-trees.json` # Staging for the platform
 * `json-envs/intake/intake-services-production.json` # Production for the platform
+* `json-envs/middlelayer/middlelayer-services-dev.json` # Development for the middlelayer
 * `json-envs/middlelayer/middlelayer-services-staging.json` # Staging for the middlelayer
 * `json-envs/middlelayer/middlelayer-services-production.json` # Production for the middlelayer
 
@@ -43,7 +45,7 @@ Services themselves should be declared as such:
 ]
 ```
 
-Please make sure you have the [cf multi-cups plugin](https://github.com/18F/cf-multi-cups-plugin) installed. 
+Please make sure you have the [cf multi-cups plugin](https://github.com/18F/cf-multi-cups-plugin) installed.
 
 `./migration.sh`
 
@@ -96,7 +98,7 @@ Prerequisites:
    - openssl-login-prod.conf
    - openssl-eauth-dev.conf
    - openssl-eauth-prod.conf
-   
+
 The `conf` file should just include the following information. (Please replace <VARIABLE> with your information).
 
 ```
@@ -139,7 +141,7 @@ The cert will be proivded to the service provider via email.
 
 
 `{"admin_username":"USERFIRSTNAME_USERLASTNAME","forests":["all"]}`
-or 
+or
 `{"admin_username":"USERFIRSTNAME_USERLASTNAME","forests":["mthood"]}`.
 
 ### Login.gov and login-service-provider information
@@ -229,7 +231,7 @@ name: new-relic
 
 License key for new relic monitor
 
-#### JWT 
+#### JWT
 ```
 environment: platform
 name: jwt
