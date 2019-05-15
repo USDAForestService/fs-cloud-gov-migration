@@ -1,4 +1,4 @@
-# U.S. Forest Service Open Forest Migration
+# U.S. Forest Service Open Forest Migration and Configuration
 
 [![FS ePermits Badge](https://img.shields.io/badge/-ePermit-006227.svg?colorA=FFC526&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAACFlBMVEUAAAD%2F%2FyXsvSW8qiXLsCXjuSXyvyX7wiX2wSXqvCXUsyXBrCXvviX%2F%2FyX8yCWUmyVliSV%2FkyV7kSWIlyV0jiWZnSX9yCXNsSXRsiXWtCVWgyVYhCXZtiX%2FyCV8kiV%2BkiX%2FyiX%2FzCWIliWElSX%2FzSX2wiVniSV3kCX2wiXUtCU5eCVujCXWtCW%2FqyXDrSWtpCWwpSWmoiWypiXeuCWJlyWPmSXiuiX%2F1CXsvSXFriW4qSWrpCWElCVdhiWSmiW3qCXCrSXQsiXyvyX%2F1CX%2F%2FyP%2F5yX%2F0iX%2FxCXrvCX%2FxiX%2F0iX%2F5yUcbCU6eCVAeiUfbiVEfCVEfCVZhCVEfCUzdSUtcyVAeyVNfyVZhCVGfSVEfCUqciUSaSUIZCUYayWPmSUUaiUCYiUVaiU1diVjiCUjcCVNfyVFfCXnuyU%2FeiUqciVliSVPgCWQmSUlcCVQgSV7kSX%2FxiWHliVPgCWPmSUtcyWLlyUibyVXgyWzpyX%2FxyXJryUXayVahCWIliWOmCU4eCV2jyXBrCXcuCXMsSVbhSUYaiV1jyU4eCVOgCVujCU6eCUudCWAkyUlcCVEfCVehiVYhCU%2FeiVvjSUSaSUAYiUAYiU1diWAlCUxdSUAYSUBYiUTaSVvjSVqiyVGfSUcbCUQaCUPaCUNZyULZiURaSUYayU6eCVehiVehiV1jyVmiSVOgCVRgSVSgSV2jyVxjSVvjSVMulUvAAAATHRSTlMAAGrao3NYUFdvndVtADfb%2Ffn2%2BP3cOMHAl%2F39lT7v7jsx6eozTPT2UoT%2B%2F4%2FGz%2FL46ut68%2FJ4B1Kau9Pu%2F%2BzQt5NMBgAKGUikQxYIJokgEwAAAFtJREFUCNdjZGBEBiwMvIy2jIcZGRkZrRiPMTIyiFsiJPcxMkgyOsJ4OxhZGFgYOeE6SeMyMuhGI0yew8LAxI3gMqFxGRmMGUthvBZGRgZzFEczMDC4QJlbGRgA3KAIv74V5FUAAAAASUVORK5CYII%3D)](https://github.com/18F/fs-online-permitting)
 
@@ -9,18 +9,21 @@ code in two separate repositories.
 
 The repositories are the [https://github.com/18f/fs-open-forest-platform] and the [https://github.com/18f/fs-open-forest-middlelayer-api].
 
-Each application is deployed in both a `staging` and `production` environment housed in a separate space within the org cloud.gov org. For more on cloud.gov orgs and spaces, please see the [cloud foundry docs](https://docs.cloudfoundry.org/concepts/roles.html)
+Each application is deployed in `development`, `staging`, and `production` environments housed in separate corresponding spaces within the cloud.gov org. For more on cloud.gov orgs and spaces, please see the [cloud foundry docs](https://docs.cloudfoundry.org/concepts/roles.html)
 
-This migration script does not provide either production or staging data held in the `s3` buckets or databases.
+This migration script does not provide any data held in the `s3` buckets or databases.
 
 This repo may also help you manage the [connected services of the application](https://github.com/18F/fs-open-forest/wiki/Ongoing-site-architecture#connected-services), bound within [VCAP_SERVICE](https://docs.cloudfoundry.org/buildpacks/node/node-service-bindings.html#creds) in the environment variables.
 
 ## Running the script
 
+### Install the `Multi-Cups-Plugin` for Cloud Foundry
+Follow the directions [here](https://github.com/18F/cf-multi-cups-plugin).
+
 ### Prepare environment variables
 Fill the following files with the appropriate credentials per environment. Please refer to (/#user-provided-services) to see what should be in each file:
 * `json-envs/intake/intake-services-dev.json` # Development for the platform
-* `json-envs/intake/intake-services-trees.json` # Staging for the platform
+* `json-envs/intake/intake-services-staging.json` # Staging for the platform
 * `json-envs/intake/intake-services-production.json` # Production for the platform
 * `json-envs/middlelayer/middlelayer-services-dev.json` # Development for the middlelayer
 * `json-envs/middlelayer/middlelayer-services-staging.json` # Staging for the middlelayer
@@ -32,20 +35,19 @@ Services themselves should be declared as such:
   {
     "name": "servicename1",
     "credentials": {
-  	"key1": "anytype",
-  	"key2": "anytype"
+  	  "key1": "anytype",
+  	  "key2": "anytype"
   	}
   },
   {
-    "name":"servicename1",
+    "name":"servicename2",
     "credentials" : {
-          "key3": "anytype",
-          "key4": "anytype"
-  }
+      "key3": "anytype",
+      "key4": "anytype"
+  },
+  ...
 ]
 ```
-
-Please make sure you have the [cf multi-cups plugin](https://github.com/18F/cf-multi-cups-plugin) installed.
 
 `./migration.sh`
 
@@ -53,35 +55,15 @@ If you would like to not run the migration tasks and just create the new apps an
 
 `./migration.sh false`
 
-
 ### Tasks following completion of the script:
 ### Update CI Keys
 Deployer credentials on `circle ci` should be updated to the new deployer accounts.
 
-### migrate middlelayer users
-Create users on the middlelayer. Using this script.
-```
-cf t -s api-staging
-cf ssh fs-middlelayer-api-staging
-export HOME=/home/vcap/app
-export TMPDIR=/home/vcap/tmp
-cd /home/vcap/app
-[ -d /home/vcap/app/.profile.d ] && for f in /home/vcap/app/.profile.d/*.sh; do source "$f"; done
-source .profile.d/nodejs.sh
-deps/0/bin/node app/cmd/createUser.js -u <MIDDLE_SERVICE_DEV_MIDDLELAYER_USERNAME> -p <MIDDLE_SERVICE_DEV_MIDDLELAYER_PASSWORD> -r admin
-
-cf t -s api-production
-cf ssh fs-middlelayer-api-staging
-export HOME=/home/vcap/app
-export TMPDIR=/home/vcap/tmp
-cd /home/vcap/app
-[ -d /home/vcap/app/.profile.d ] && for f in /home/vcap/app/.profile.d/*.sh; do source "$f"; done
-source .profile.d/nodejs.sh
-deps/0/bin/node app/cmd/createUser.js -u <MIDDLE_SERVICE_PROD_MIDDLELAYER_USERNAME> -p <MIDDLE_SERVICE_PROD_MIDDLELAYER_PASSWORD> -r admin
-```
+### Generate and configure middlelayer users
+See [Middlelayer](https://github.com/18F/fs-open-forest-middlelayer-api) for instructions on how to generate a user.
 
 ## Information in the connected services
-### Authenication Certificates for eAuth and Login.gov
+### Authentication Certificates for eAuth and Login.gov
 This section is more about how to generate some of the certificates for the services.
 
 ## Run the script
@@ -137,7 +119,7 @@ openssl req -days 3650 -newkey rsa:2048 -nodes -keyout keys/saml.key.enc.usdafor
 The cert will be proivded to the service provider via email.
 `issuer`: the service provider ID submitted via email to ICAM.
 
-`whitelist`: an array of object names extracted from a successful eauth authenication that can access the admin interface.
+`whitelist`: an array of object names extracted from a successful eauth authentication that can access the admin interface.
 
 
 `{"admin_username":"USERFIRSTNAME_USERLASTNAME","forests":["all"]}`
@@ -165,7 +147,7 @@ The public certificate will have to be registered in the int.idp.login.gov dashb
 ## User provided services
 The [user provided services a cloud foundry feature](https://docs.cloudfoundry.org/devguide/services/user-provided.html) to help manage external 3rd party services. This ecosystem makes heavy use of them in order to manage the credentials of integrated services.
 
-These user provided services are parsed as environment variables in a vcap-constant file in both the [platform definitions](https://github.com/18F/fs-open-forest-platform/blob/dev/wiki/development/environment-variables.md) and [middlelayer services](https://github.com/18F/fs-open-forest-middlelayer-api#environment-variables). While each repsortoriy will give a better indication of the services use, here are some of the expected values and how to generate them.
+These user provided services are parsed as environment variables in a vcap-constant file in both the [platform definitions](https://github.com/18F/fs-open-forest-platform/blob/dev/wiki/development/environment-variables.md) and [middlelayer services](https://github.com/18F/fs-open-forest-middlelayer-api#environment-variables). While each repository will give a better indication of the services use, here are some of the expected values and how to generate them.
 
 [For more on why we use then instead of environment variables](https://github.com/18F/fs-open-forest-platform/blob/dev/docs/development/environment-variables.md#required-environment-variables).
 
@@ -195,7 +177,7 @@ environment: platform
 name: middlelayer-service
 ```
 
-URL and credentials of the middlelayer application.
+URL and credentials of the middlelayer application. See [Middlelayer](https://github.com/18F/fs-open-forest-middlelayer-api) for instructions on how to generate a user.
 
 #### Pay.gov
 ```
@@ -239,6 +221,20 @@ name: jwt
 
 Enables JWT for Christmas tree permit retrieval
 
+#### Feature Flags
+```
+environment: platform
+name: feature-flags
+```
+Enables toggling of certain features or implementations. Current options are:
+
+| feature | default value |
+| -- | -- |
+| mock_admin_auth  | false |
+| mock_public_auth | false |
+| mock_pay_gov     | false |
+| new_relic        | true  |
+
 ### User Provided services for the middlelayer
 #### Connecting safely to the platform
 ```
@@ -255,8 +251,8 @@ name: nrm-suds-url-service
 ```
 
 `SUDS_API_URL`: string of NRM SUDS API url the environment is to connect to provided by NRM.
-`password`: string of NRM SUDS api authenication password.
-`username`: string of NRM SUDS api authenication username.
+`password`: string of NRM SUDS api authentication password.
+`username`: string of NRM SUDS api authentication username.
 
 #### New Relic monitor
 ```
@@ -266,9 +262,16 @@ name: new-relic
 
 License key for new relic monitor.
 
+## Updating environment variables
+When credentials change, the environment variables in Cloud.gov will need to be updated and the corresponding application restaged. For the example below, we will assume a credential changed for the staging intake application. WARNING these changes are **IRREVERSABLE** so make sure to use the appropriate CF `space` and `application`.
+- Update the value in `json-envs/intake/intake-services-staging.json`
+- `cf t -s platform-staging`
+- From the root of this repo run `cf multi-cups-plugin -p json-envs/intake/intake-services-staging.json`
+- `cf restage open-forest-platform-api-staging`
+
 
 ## Notes for the deployment configuration
-`cf ssh` is currently disabled for the production cloud.gov `api-production` and `public-production` spaces.
+`cf ssh` is currently disabled for the production cloud.gov `middlelayer-production` and `public-production` spaces.
 
 ## Contributing
 
