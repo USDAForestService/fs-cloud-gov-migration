@@ -57,7 +57,9 @@ If you would like to not run the migration tasks and just create the new apps an
 
 ### Tasks following completion of the script:
 ### Update CI Keys
-Deployer credentials on `circle ci` should be updated to the new deployer accounts.
+For each environment, a set of "deployer credentials" is generated for use in other systems that need to interact with Cloud.gov programmatically. Circle CI is configured with these credentials in order to trigger deploys to `staging` and `production` environments on the successful completion of automatic tests. In addition, certain other credentials, such as those for additional S3 buckets, are generated in Cloud.gov to leverage their brokered services. If any of these change, they will need to be updated in the Circle CI user interface as well:
+- [Platform](https://circleci.com/gh/18F/fs-open-forest-platform/edit#env-vars)
+- [Middlelayer](https://circleci.com/gh/18F/fs-open-forest-middlelayer-api/edit#env-vars)
 
 ### Generate and configure middlelayer users
 See [Middlelayer](https://github.com/18F/fs-open-forest-middlelayer-api) for instructions on how to generate a user.
