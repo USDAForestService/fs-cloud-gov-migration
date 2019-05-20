@@ -12,7 +12,6 @@ OLDORG=gsa-acq-proto
 NOT_REBUILD_SERVICE=false
 
 # Import Env vars and module scripts
-source ./bin/env.sh
 source ./bin/util.sh
 source ./bin/middlelayer.sh
 source ./bin/platform.sh
