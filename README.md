@@ -49,6 +49,7 @@ Services themselves should be declared as such:
 ]
 ```
 
+<<<<<<< HEAD
 To obtain all environment variables programmatically from existing Cloud Foundry infrastructure:
 - Make sure you are in the root of this repository
 - Log into the correct `org` with the Cloud Foundry CLI Ex. `cf login -a api.fr.cloud.gov -o usda-forest-service --sso`
@@ -56,6 +57,8 @@ To obtain all environment variables programmatically from existing Cloud Foundry
 
 ### Migrate
 
+=======
+>>>>>>> master
 `./migration.sh`
 
 If you would like to not run the migration tasks and just create the new apps and corresponding services within an org run:
@@ -273,12 +276,18 @@ License key for new relic monitor.
 
 ## Updating environment variables
 When credentials change, the environment variables in Cloud.gov will need to be updated and the corresponding application restaged. For the example below, we will assume a credential changed for the staging intake application. WARNING these changes are **IRREVERSABLE** so make sure to use the appropriate CF `space` and `application`.
+<<<<<<< HEAD
 - Make sure you are in the root of this repository
 - Log into the correct `org` with the Cloud Foundry CLI Ex. `cf login -a api.fr.cloud.gov -o usda-forest-service --sso`
 - `./bin/get-credentials.sh` -- **Note** this will overwrite existing local files so save a copy if necessary. 
 - Update the value in `json-envs/intake/intake-services-staging.json`
 - `cf t -s platform-staging`
 - `cf multi-cups-plugin -p json-envs/intake/intake-services-staging.json`
+=======
+- Update the value in `json-envs/intake/intake-services-staging.json`
+- `cf t -s platform-staging`
+- From the root of this repo run `cf multi-cups-plugin -p json-envs/intake/intake-services-staging.json`
+>>>>>>> master
 - `cf restage open-forest-platform-api-staging`
 
 
