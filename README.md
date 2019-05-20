@@ -21,7 +21,7 @@ This repo may also help you manage the [connected services of the application](h
 Follow the directions [here](https://github.com/18F/cf-multi-cups-plugin).
 
 ### Prepare environment variables
-A local copy of the Environment variables for each application is required to perform the migration. These should be organized per application in the following files below, please refer to (/#user-provided-services) to see what should be in each file:
+A local copy of the Environment variables for each application is required to perform the migration. These should be organized per application in the following files below, please refer to [User Provided Services](/#user-provided-services) to see what should be in each file:
 * `json-envs/intake/intake-services-dev.json` # Development for the platform
 * `json-envs/intake/intake-services-staging.json` # Staging for the platform
 * `json-envs/intake/intake-services-production.json` # Production for the platform
@@ -211,7 +211,7 @@ The resulting file will have the `cert`, the leveraged `certificate certs` and t
       ],
 ```
 
- The private key should be added to the `private_key` in the user-provided service. The `password` used to generate will need to be added as well.
+The private key should be added to the `private_key` in the user-provided service. The `password` used to generate will need to be added as well.
 
 
 #### New Relic monitor
@@ -273,7 +273,7 @@ License key for new relic monitor.
 
 ## Updating environment variables
 When credentials change, the environment variables in Cloud.gov will need to be updated and the corresponding application restaged. For the example below, we will assume a credential changed for the staging intake application. WARNING these changes are **IRREVERSABLE** so make sure to use the appropriate CF `space` and `application`.
-<<<<<<< HEAD
+
 - Make sure you are in the root of this repository
 - Log into the correct `org` with the Cloud Foundry CLI Ex. `cf login -a api.fr.cloud.gov -o usda-forest-service --sso`
 - `./bin/get-credentials.sh` -- **Note** this will overwrite existing local files so save a copy if necessary. 
