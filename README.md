@@ -37,6 +37,9 @@ This repo may also help you manage the [connected services of the application](h
 - [Updating Environment Variables](#updating-environment-variables)
 - [Utilities](#utilities)
   - [Utilities Requirements](#utilities-requirements)
+  - [X509 Certificate Generation](#x509-certificate-generation)
+  - [JWK Generation](#jwk-generation)
+  - [Public Key Certificate Generation](#public-key-certificate-generation)
 - [Notes](#notes)
 - [Contributing](#contributing)
 - [Public Domain](#public-domain)
@@ -192,7 +195,7 @@ The Login[.]gov integration requires that the private key be provided in the for
 - `npm install`
 - `node certificate-generation/jwkmaker.js ./certificates/keys/saml.key.enc.usda-forest-service-epermit-<integration-environment>"`
 
-### Certificate Generation
+### Public Key Certificate Generation
 Pay[.]gov requires a Public Key Certificate to integrate. This section is not verified...
 - obtain `paygov.pfx` FROM Pay[.]gov?
 - run `openssl pkcs12 -in paygov.pfx -out outfile.pem -nodes`
