@@ -15,21 +15,71 @@ This migration script does not provide any data held in the `s3` buckets or data
 
 This repo may also help you manage the [connected services of the application](https://github.com/18F/fs-open-forest/wiki/Ongoing-site-architecture#connected-services), bound within [VCAP_SERVICE](https://docs.cloudfoundry.org/buildpacks/node/node-service-bindings.html#creds) in the environment variables.
 
-## Running the script
+## Table of contents
 
-### Install the `Multi-Cups-Plugin` for Cloud Foundry
-Follow the directions [here](https://github.com/18F/cf-multi-cups-plugin).
+- [Overview](#overview)
+- [Table of contents](#table-of-contents)
+- [Migration Requirements](#migration-requirements)
+  - [Bash](#bash)
+  - [Cloud Foundry CLI](#cloud-foundry-cli)
+  - [Cloud Foundry Plugins](#cloud-foundry-plugins)
+  - [JQ](#jq)
+- [Environment Variables](#environment-variables)
+  - [User Provided Services](#user-provided-services)
+  - [Organization](#organization)
+  - [Format](#format)
+  - [Values](#values)
+  - [Fetching](#fetching)
+- [Migration](#migration)
+- [After Migration](#after-migration)
+  - [Update CI Keys](#update-ci-keys)
+  - [Generate Middlelayer Users](#generate-middlelayer-users)
+- [Updating Environment Variables](#updating-environment-variables)
+- [Utilities](#utilities)
+  - [Utilities Requirements](#utilities-requirements)
+  - [X509 Certificate Generation](#x509-certificate-generation)
+  - [JWK Generation](#jwk-generation)
+  - [Public Key Certificate Generation](#public-key-certificate-generation)
+- [Notes](#notes)
+- [Contributing](#contributing)
+- [Public Domain](#public-domain)
 
-### Prepare environment variables
-A local copy of the Environment variables for each application is required to perform the migration. These should be organized per application in the following files below, please refer to [User Provided Services](/#user-provided-services) to see what should be in each file:
-* `json-envs/intake/intake-services-dev.json` # Development for the platform
-* `json-envs/intake/intake-services-staging.json` # Staging for the platform
-* `json-envs/intake/intake-services-production.json` # Production for the platform
-* `json-envs/middlelayer/middlelayer-services-dev.json` # Development for the middlelayer
-* `json-envs/middlelayer/middlelayer-services-staging.json` # Staging for the middlelayer
-* `json-envs/middlelayer/middlelayer-services-production.json` # Production for the middlelayer
+## Migration Requirements
 
-Services themselves should be declared as such:
+### Bash
+All scripts in this repository are written using BASH. If you are using MacOS, Linux, Unix, this will be available in your default shell. If you are using Windows, please contact your IT support to determine the best way to run BASH scripts.
+
+### Cloud Foundry CLI
+- [CF CLI](https://github.com/cloudfoundry/cli)
+
+### Cloud Foundry Plugins
+- [multi-cups-plugin](https://github.com/18F/cf-multi-cups-plugin)
+- [zero-downtime-deploy](https://github.com/contraband/autopilot)
+
+### JQ
+- [jq](https://stedolan.github.io/jq/)
+
+## Environment variables
+Prior to running the migration, you will need a local copy of the environment variables for each application.
+
+### User provided services
+The [user provided services a cloud foundry feature](https://docs.cloudfoundry.org/devguide/services/user-provided.html) to help manage external 3rd party services. This ecosystem makes heavy use of them in order to manage the credentials of integrated services.
+
+These user provided services are parsed as environment variables in a vcap-constant file in both the [platform definitions](https://github.com/18F/fs-open-forest-platform/blob/dev/wiki/development/environment-variables.md) and [middlelayer services](https://github.com/18F/fs-open-forest-middlelayer-api#environment-variables). While each repository will give a better indication of the services use, here are some of the expected values and how to generate them.
+
+[For more on why we use then instead of environment variables](https://github.com/18F/fs-open-forest-platform/blob/dev/docs/development/environment-variables.md#required-environment-variables).
+
+### Organization
+These should be organized in a group of `json` files, one per application: 
+* `json-envs/intake/intake-services-dev.json`
+* `json-envs/intake/intake-services-staging.json`
+* `json-envs/intake/intake-services-production.json`
+* `json-envs/middlelayer/middlelayer-services-dev.json`
+* `json-envs/middlelayer/middlelayer-services-staging.json`
+* `json-envs/middlelayer/middlelayer-services-production.json`
+
+### Format
+Each file should contain an array of the required services and credentials in the format below. See [VCAP_SERVICES](https://docs.cloudfoundry.org/devguide/deploy-apps/environment-variable.html#VCAP-SERVICES) for more information.
 ```
 [
   {
@@ -49,12 +99,18 @@ Services themselves should be declared as such:
 ]
 ```
 
+### Values
+For details on the required values see the documentation in the respective repository for each application:
+- [Platform](https://github.com/18f/fs-open-forest-platform)
+- [Middlelayer](https://github.com/18f/fs-open-forest-middlelayer-api)
+
+### Fetching
 To obtain all environment variables programmatically from existing Cloud Foundry infrastructure:
-- Make sure you are in the root of this repository
+- Make sure you are in the root of this repository and have installed of the [requirements](#requirements)
 - Log into the correct `org` with the Cloud Foundry CLI Ex. `cf login -a api.fr.cloud.gov -o usda-forest-service --sso`
 - `./bin/get-credentials.sh` -- **Note** this will overwrite existing local files so save a copy if necessary.
 
-### Migrate
+## Migration
 
 `./migration.sh`
 
@@ -62,229 +118,105 @@ If you would like to not run the migration tasks and just create the new apps an
 
 `./migration.sh false`
 
-### Tasks following completion of the script:
+## After Migration
+
 ### Update CI Keys
-For each environment, a set of "deployer credentials" is generated for use in other systems that need to interact with Cloud.gov programmatically. Circle CI is configured with these credentials in order to trigger deploys to `staging` and `production` environments on the successful completion of automatic tests. In addition, certain other credentials, such as those for additional S3 buckets, are generated in Cloud.gov to leverage their brokered services. If any of these change, they will need to be updated in the Circle CI user interface as well:
+For each environment, a set of "deployer credentials" is generated for use in other systems that need to interact with Cloud[.]gov programmatically. Circle CI is configured with these credentials in order to trigger deploys to `staging` and `production` environments on the successful completion of automatic tests. In addition, certain other credentials, such as those for additional S3 buckets, are generated in Cloud[.]gov to leverage their brokered services. If any of these change, they will need to be updated in the Circle CI user interface as well:
 - [Platform](https://circleci.com/gh/18F/fs-open-forest-platform/edit#env-vars)
 - [Middlelayer](https://circleci.com/gh/18F/fs-open-forest-middlelayer-api/edit#env-vars)
 
-### Generate and configure middlelayer users
-See [Middlelayer](https://github.com/18F/fs-open-forest-middlelayer-api) for instructions on how to generate a user.
-
-## Information in the connected services
-### Authentication Certificates for eAuth and Login.gov
-This section is more about how to generate some of the certificates for the services.
-
-## Run the script
-The easiest way to to generate certificates that will last one year is by running the following script:
-```
-./certificate-generation/make.sh <WHERE-TO-PUT-THE-OUTPUT>
-```
-
-Prerequisites:
-`openssl` command line tool
-`node.js`
-`conf` files:
-   - openssl-login-tree.conf
-   - openssl-login-prod.conf
-   - openssl-eauth-dev.conf
-   - openssl-eauth-prod.conf
-
-The `conf` file should just include the following information. (Please replace <VARIABLE> with your information).
-
-```
-[ req ]
-default_bits           = 2048
-distinguished_name     = req_distinguished_name
-prompt                 = no
-
-[ req_distinguished_name ]
-commonName             = <API_APP_URL>
-organizationName       = USDA
-organizationalUnitName = FORESTSERVICE
-localityName           = Washington
-stateOrProvinceName    = DC
-countryName            = US
-emailAddress           = fs@fs.fed.us
-```
-
-This script will create 4 certificates and private keys for the identity providers that Open Forest uses.
-The private keys will all go into the user-provided services `VCAP-SERVICES` with cloud.gov.
-
-#### Eauth Certs and other eauth-service-provider information
-```
-environment: platform
-name: eauth-service-provider
-```
-
-`cert`: From the SAML provider from the ICAM partnership in the `<ds:X509Certificate>` key. This should be the same across environments.
-`private_key`: contents of the key from the following command:
-
-```
-openssl req -days 3650 -newkey rsa:2048 -nodes -keyout keys/saml.key.enc.usdaforestserviceepermitENVNAME \
-  -x509 -out certs/saml.crt.usdaforestserviceepermitENVNAME -config openssl-ENVNAME.conf
-```
-
-The cert will be proivded to the service provider via email.
-`issuer`: the service provider ID submitted via email to ICAM.
-
-`whitelist`: an array of object names extracted from a successful eauth authentication that can access the admin interface.
-
-
-`{"admin_username":"USERFIRSTNAME_USERLASTNAME","forests":["all"]}`
-or
-`{"admin_username":"USERFIRSTNAME_USERLASTNAME","forests":["mthood"]}`.
-
-### Login.gov and login-service-provider information
-```
-environment: platform
-name: login-service-provider
-```
-
-Generated with the following command
-
-```
-openssl req -days 3650 -newkey rsa:2048 -nodes -keyout keys/saml.key.enc.usdaforestserviceepermitENVNAME \
-  -x509 -out certs/saml.crt.usdaforestserviceepermitENVNAME -config openssl-login-tree.conf
-  ```
-
-Then convert the `saml.key.enc.FILE` or `pem` to a jwk.
-The public certificate will have to be registered in the int.idp.login.gov dashboard.
-`issuer`: the SPID for login.gov partnership registered in the dashboard.
-`idp_username` & `idp_password`: Basic auth for the login.gov dev service provider.
-
-## User provided services
-The [user provided services a cloud foundry feature](https://docs.cloudfoundry.org/devguide/services/user-provided.html) to help manage external 3rd party services. This ecosystem makes heavy use of them in order to manage the credentials of integrated services.
-
-These user provided services are parsed as environment variables in a vcap-constant file in both the [platform definitions](https://github.com/18F/fs-open-forest-platform/blob/dev/wiki/development/environment-variables.md) and [middlelayer services](https://github.com/18F/fs-open-forest-middlelayer-api#environment-variables). While each repository will give a better indication of the services use, here are some of the expected values and how to generate them.
-
-[For more on why we use then instead of environment variables](https://github.com/18F/fs-open-forest-platform/blob/dev/docs/development/environment-variables.md#required-environment-variables).
-
-### User provided services for the platform
-#### Intake service
-```
-environment: platform
-name: intake-client-service
-```
-
-The url for the frontend in the environment
-and the corresponding jwt_secret for the - verify.
-
-#### SMTP service
-```
-environment: platform
-name: smtp-service
-```
-
-SMTP credentials and or just email to permit `node-mailer` to send emails.
-
-`admins`: an array of admins to receive administrator emails from the system for the Special use applications.
-
-#### Middlelayer service
-```
-environment: platform
-name: middlelayer-service
-```
-
-URL and credentials of the middlelayer application. See [Middlelayer](https://github.com/18F/fs-open-forest-middlelayer-api) for instructions on how to generate a user.
-
-#### Pay.gov
-```
-environment: platform
-name: pay-gov
-```
-
-The certificates for pay.gov can be generated with the following commands:
-
-```
-openssl pkcs12 -in paygov.pfx -out outfile.pem -nodes
-```
-
-The resulting file will have the `cert`, the leveraged `certificate certs` and the private key. The `certificate` will need to be an array of the certificates as strings in the following format:
-```
-"certificate": [
-        "-----BEGIN CERTIFICATE-----\ncert1-----END CERTIFICATE-----\n",
-        "-----BEGIN CERTIFICATE-----\ncert2-----END CERTIFICATE-----\n",
-        "-----BEGIN CERTIFICATE-----\ncert3-----END CERTIFICATE-----\n",
-        "-----BEGIN CERTIFICATE-----\ncert4-----END CERTIFICATE-----\n",
-        "-----BEGIN CERTIFICATE-----\ncert5-----END CERTIFICATE-----\n"
-      ],
-```
-
-The private key should be added to the `private_key` in the user-provided service. The `password` used to generate will need to be added as well.
-
-
-#### New Relic monitor
-```
-environment: platform
-name: new-relic
-```
-
-License key for new relic monitor
-
-#### JWT
-```
-environment: platform
-name: jwt
-```
-
-Enables JWT for Christmas tree permit retrieval
-
-#### Feature Flags
-```
-environment: platform
-name: feature-flags
-```
-Enables toggling of certain features or implementations. Current options are:
-
-| feature | default value |
-| -- | -- |
-| mock_admin_auth  | false |
-| mock_public_auth | false |
-| mock_pay_gov     | false |
-| new_relic        | true  |
-
-### User Provided services for the middlelayer
-#### Connecting safely to the platform
-```
-environment: middlelayer
-name: auth-service
-```
-
-`JWT_SECRET_KEY`: string for generating signed tokens while connecting to the platform.
-
-#### Connecting safely to USFS Natural Resource Manager Special Use Datasystem (NRM SUDS)
-```
-environment: middlelayer
-name: nrm-suds-url-service
-```
-
-`SUDS_API_URL`: string of NRM SUDS API url the environment is to connect to provided by NRM.
-`password`: string of NRM SUDS api authentication password.
-`username`: string of NRM SUDS api authentication username.
-
-#### New Relic monitor
-```
-environment: middlelayer
-name: new-relic
-```
-
-License key for new relic monitor.
+### Generate Middlelayer Users
+See [Middlelayer](https://github.com/18F/fs-open-forest-middlelayer-api) for instructions on how to generate a user. After a user is generated, the configuration for the 'platform' in the corresponding environment will have to be updated with the generated authentication credentials. See [Updating Environment Variables](#updating-environment-variables) for details.
 
 ## Updating environment variables
-When credentials change, the environment variables in Cloud.gov will need to be updated and the corresponding application restaged. For the example below, we will assume a credential changed for the staging intake application. WARNING these changes are **IRREVERSABLE** so make sure to use the appropriate CF `space` and `application`.
+When credentials change, the environment variables in Cloud[.]gov will need to be updated and the corresponding application restaged. For the example below, we will assume a credential changed for the staging intake application. **WARNING** these changes are **IRREVERSABLE** so make sure to use the appropriate Cloud[.]gov `space`, `application`, and `env variable file`.
 
-- Make sure you are in the root of this repository
-- Log into the correct `org` with the Cloud Foundry CLI Ex. `cf login -a api.fr.cloud.gov -o usda-forest-service --sso`
-- `./bin/get-credentials.sh` -- **Note** this will overwrite existing local files so save a copy if necessary. 
-- Update the value in `json-envs/intake/intake-services-staging.json`
-- `cf t -s platform-staging`
-- `cf multi-cups-plugin -p json-envs/intake/intake-services-staging.json`
-- `cf restage open-forest-platform-api-staging`
+- Update your local copy by following the instructions [here](#fetching)
+- Update the value in `json-envs/<env variable file>.json`
+- `cf t -s <space>`
+- `cf multi-cups-plugin -p json-envs/<env variable file>.json`
+- `cf restage <application>`
+- where
+  - env variable file: `intake/intake-services-staging`
+  - space: `open-forest-platform-staging`
+  - application: `open-forest-platform-staging`
+
+## Utilities
+For our vendor integrations we are required to generate and provide certificates in order to sign and/or encrypt the transactions. We provide some useful scripts and instructions to help with this process.
+
+### Utilities Requirements
+
+#### OpenSSL
+- [OpenSSL](https://www.openssl.org/)
+
+#### Node
+- [Node](https://nodejs.org/en/) (Prefer installing using a version manager such as [NVM](https://github.com/nvm-sh/nvm))
+
+### X509 Certificate Generation
+Login[.]gov and EAuth require X509 certificates to integrate. Generate a unique public certificate and private key for each integration and environment:
+
+- Create a configuration file named `openssl-<integration-environment>.conf` in the `certificates/conf` folder where "integration-environment" is one of:
+  - `login-tree` (-> Open Forest staging)
+  - `login-prod`
+  - `eauth-dev` (-> Open Forest staging)
+  - `eauth-prod`
+
+- Populate the configuration file with the following:
+```
+  [ req ]
+  default_bits           = 2048
+  distinguished_name     = req_distinguished_name
+  prompt                 = no
+
+  [ req_distinguished_name ]
+  commonName             = <API_APP_URL>
+  organizationName       = USDA
+  organizationalUnitName = FORESTSERVICE
+  localityName           = Washington
+  stateOrProvinceName    = DC
+  countryName            = US
+  emailAddress           = fs@fs.fed.us
+```
+
+where "API_APP_URL" is the URL of the application.
+
+- run `./certificate-generation/make.sh <integration-environment>` where "integration-environment" corresponds to the configuration file
+
+  This will generate the following files:
+  - `./certificates/keys/saml.key.enc.usda-forest-service-epermit-<integration-environment>`
+  - `./certificates/certs/saml.crt.usda-forest-service-epermit-<integration-environment>`
+
+- If necessary, create a Json Web Key (JWK) from the private key by following the steps in [JWK Generation](#jwk-generation).
+
+- The appropriate public certificates in `certificates/certs` should be shared with the Eauth/Login[.]gov while the private keys (or corresponding JWK) will be used in our application configuration.
+
+### JWK Generation
+The Login[.]gov integration requires that the private key be provided in the form of a [Json Web Key](https://tools.ietf.org/html/rfc7517) or JWK.
+- `npm install`
+- `node certificate-generation/jwkmaker.js ./certificates/keys/saml.key.enc.usda-forest-service-epermit-<integration-environment>"`
+
+### Public Key Certificate Generation
+Pay[.]gov requires a Public Key Certificate to integrate. This section is not verified...
+- obtain `paygov.pfx` FROM Pay[.]gov?
+- run `openssl pkcs12 -in paygov.pfx -out outfile.pem -nodes`
+
+  The resulting file will have the `cert`, the leveraged `certificate certs` and the private key. The `certificate` will need to be an array of the certificates as strings in the following format:
+
+  ```
+  "certificate": [
+          "-----BEGIN CERTIFICATE-----\ncert1-----END CERTIFICATE-----\n",
+          "-----BEGIN CERTIFICATE-----\ncert2-----END CERTIFICATE-----\n",
+          "-----BEGIN CERTIFICATE-----\ncert3-----END CERTIFICATE-----\n",
+          "-----BEGIN CERTIFICATE-----\ncert4-----END CERTIFICATE-----\n",
+          "-----BEGIN CERTIFICATE-----\ncert5-----END CERTIFICATE-----\n"
+        ],
+  ```
+
+  The private key should be added to the `private_key` in the user-provided service. The `password` used to generate will need to be added as well.
 
 
-## Notes for the deployment configuration
-`cf ssh` is currently disabled for the production cloud.gov `middlelayer-production` and `public-production` spaces.
+## Notes
+`cf ssh` is currently disabled for the production Cloud[.]gov `middlelayer-production` and `public-production` spaces.
 
 ## Contributing
 
