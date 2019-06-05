@@ -106,7 +106,7 @@ For details on the required values see the documentation in the respective repos
 
 ### Fetching
 To obtain all environment variables programmatically from existing Cloud Foundry infrastructure:
-- Make sure you are in the root of this repository and have installed of the [requirements](#requirements)
+- Make sure you are in the root of this repository and have installed of the [requirements](#migration-requirements)
 - Log into the correct `org` with the Cloud Foundry CLI Ex. `cf login -a api.fr.cloud.gov -o usda-forest-service --sso`
 - `./bin/get-credentials.sh` -- **Note** this will overwrite existing local files so save a copy if necessary.
 
